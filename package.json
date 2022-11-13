@@ -1,0 +1,26 @@
+{
+	"name": "ledconnector",
+	"version": "0.0.0",
+	"type": "module",
+	"dependencies": {
+		"bootstrap-colorpicker": "^3.4.0",
+		"cors": "^2.8.5",
+		"create-html-element": "^4.0.1",
+		"express": "^4.18.2",
+		"jquery": "^3.6.1",
+		"net": "^1.0.2",
+		"node-html-parser": "^6.1.1",
+		"react": "^18.2.0",
+		"react-color": "^2.19.3",
+		"simple-color-picker": "^1.0.5"
+	},
+	"configurations": [
+		{
+			"name": "Launch index.html",
+			"type": "firefox",
+			"request": "launch",
+			"reAttach": true,
+			"file": "${workspaceFolder}/index.html"
+		}
+	]
+}

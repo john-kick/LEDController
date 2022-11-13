@@ -1,0 +1,57 @@
+<html lang="en">
+	<head>
+		<title>My LED Controller</title>
+		<link rel="stylesheet" href="bootstrap-5.2.2-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="main.css" />
+
+		<!-- to get rid of "GET .../favicon.ico" error-->
+		<link rel="shortcut icon" href="#" />
+	</head>
+	<body>
+		<script type="module" src="app.js"></script>
+		<script type="module" src="gradientForm.js"></script>
+
+		<script type="module" src="colorPicker.js"></script>
+
+		<div class="header">
+			<h1 id="title">My LED Controller</h1>
+		</div>
+		<div class="content">
+			<div id="button-container"></div>
+			<br />
+
+			<div id="slider-container">
+				<div>
+					<span class="description">Brightness</span>
+					<br />
+					<input type="range" min="1" max="100" class="slider" id="brightness" />
+				</div>
+				<div>
+					<span class="description">Speed</span>
+					<br />
+					<input type="range" min="1" max="100" class="slider" id="speed" />
+				</div>
+			</div>
+			<br />
+
+			<div id="gradient-container"></div>
+			<button id="add-gradient" class="btn btn-lg btn-secondary form-button">Add gradient</button>
+
+			<div id="gradient-modal" class="modal">
+				<div class="modal-content">
+					<span class="close">&times; Create gradient</span>
+					<form id="gradient-form">
+						<div id="gradient-preview" class="test-gradient"></div>
+						<div id="gradient-colors"></div>
+						<div id="add-gradient-color">
+							<span class="lead form-button">Add color</span>
+						</div>
+						<br />
+						<input class="btn btn-lg btn-secondary" type="submit" value="Submit" />
+					</form>
+				</div>
+			</div>
+			<canvas width="300px" height="300px" id="color-canvas"></canvas>
+		</div>
+	</body>
+</html>
