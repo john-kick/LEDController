@@ -16,13 +16,14 @@ span.onclick = () => {
 	};
 };
 
+const colorMarker = document.getElementsByClassName("marker");
+
 const removeColorDummy = document.createElement("button");
 removeColorDummy.setAttribute("class", "lead remove-color btn-dark form-button");
 removeColorDummy.setAttribute("type", "button");
 removeColorDummy.textContent = "X";
 
-const colorDummy = document.createElement("input");
-colorDummy.setAttribute("tye", "color");
+const colorDummy = document.createElement("div");
 colorDummy.setAttribute("class", "gradient-color");
 
 const inputDummy = document.createElement("input");

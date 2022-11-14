@@ -1,5 +1,4 @@
-/*import ColorPicker from './colorPicker.js';
-import * as ReactDOM from 'react-dom/client';*/
+import { createColorPicker } from "./colorPicker.js";
 
 const buttons = [
 	{ name: "red", command: "full FF0000" },
@@ -37,6 +36,15 @@ for (let slider of sliders) {
 	});
 }
 
+const colorPickerButton = document.getElementById("open-color-picker");
+colorPickerButton.addEventListener("click", () => {
+	if (!document.getElementById("color-picker-wrapper")) {
+		createColorPicker();
+	} else {
+		document.getElementById("color-picker-wrapper").remove();
+	}
+});
+
 function send(cmd) {
 	fetch("/connector", {
 		method: "POST",
@@ -48,7 +56,3 @@ function send(cmd) {
 		}),
 	});
 }
-
-/*const domContainer = document.getElementById('react-container');
-const root = ReactDOM.createRoot(domContainer);
-root.render(<ColorPicker></ColorPicker>);*/
