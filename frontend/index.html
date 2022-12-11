@@ -18,6 +18,11 @@
 			<div id="button-container"></div>
 			<br />
 
+			<div>
+				<input id="manualInput" type="text" />
+				<button id="manualInputSubmit">Submit</button>
+			</div>
+			<br />
 			<div id="slider-container">
 				<div>
 					<span class="description">Brightness</span>
@@ -32,12 +37,14 @@
 			</div>
 			<br />
 
-			<div id="gradient-container"></div>
+			<div id="gradients-container"></div>
 			<button id="add-gradient" class="btn btn-lg btn-secondary form-button">Add gradient</button>
+			<button id="edit-gradient" class="btn btn-lg btn-secondary form-button disabled">Edit gradient</button>
+			<button id="apply-gradient" class="btn btn-lg btn-secondary form-button disabled">Apply gradient</button>
 
 			<div id="gradient-modal" class="modal">
 				<div class="modal-content">
-					<span class="close">&times; Create gradient</span>
+					<h5 class="close">&times; Create gradient</h5>
 					<form id="gradient-form">
 						<div id="gradient-preview" class="test-gradient"></div>
 						<div id="gradient-colors"></div>
@@ -45,11 +52,11 @@
 							<span class="lead form-button">Add color</span>
 						</div>
 						<br />
-						<input class="btn btn-lg btn-secondary" type="submit" value="Submit" />
+						<input class="btn btn-secondary" type="submit" value="Submit" />
+						<input id="gradient-name-input" value="Name" />
 					</form>
 				</div>
 			</div>
-			<button id="open-color-picker" class="btn btn-lg btn-secondary form-button">Open color picker</button>
 		</div>
 	</body>
 </html>

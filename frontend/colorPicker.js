@@ -1,52 +1,76 @@
-export function createColorPicker() {
-	const parent = document.getElementsByClassName("content")[0];
+import { rgbToHex, rgb2hsv } from "./util.js";
 
-	parent.append(create());
+export function createColorPicker(parent) {
+	parent = parent || document.getElementsByClassName("content")[0];
+
+	const colorPickerWrapper = create();
+	parent.append(colorPickerWrapper);
 
 	const colorCanvas = document.getElementById("color-canvas");
 	const CanvasCtx = colorCanvas.getContext("2d");
 
-	updateCanvas({
-		r: 255,
-		g: 0,
-		b: 0,
-	});
-
 	const colorSlider = document.getElementById("color-slider");
 	const SliderCtx = colorSlider.getContext("2d");
 
-	let gradientSlider = SliderCtx.createLinearGradient(0, 0, 0, 300);
-	gradientSlider.addColorStop(0, "rgb(255, 0, 0)");
-	gradientSlider.addColorStop(0.16, "rgb(255, 255, 0)");
-	gradientSlider.addColorStop(0.32, "rgb(0, 255, 0)");
-	gradientSlider.addColorStop(0.5, "rgb(0, 255, 255)");
-	gradientSlider.addColorStop(0.66, "rgb(0, 0, 255)");
-	gradientSlider.addColorStop(0.83, "rgb(255, 0, 255)");
-	gradientSlider.addColorStop(1, "rgb(255, 0, 0)");
+	let gradientSlider = SliderCtx.createLinearGradient(0, 0, 360, 0);
+	gradientSlider.addColorStop(0 / 6.0, "rgb(255, 0, 0)");
+	gradientSlider.addColorStop(0.01 / 6.0, "rgb(255, 0, 0)");
+	gradientSlider.addColorStop(1 / 6.0, "rgb(255, 255, 0)");
+	gradientSlider.addColorStop(2 / 6.0, "rgb(0, 255, 0)");
+	gradientSlider.addColorStop(3 / 6.0, "rgb(0, 255, 255)");
+	gradientSlider.addColorStop(4 / 6.0, "rgb(0, 0, 255)");
+	gradientSlider.addColorStop(5 / 6.0, "rgb(255, 0, 255)");
+	gradientSlider.addColorStop(6 / 6.0, "rgb(255, 0, 0)");
 	SliderCtx.fillStyle = gradientSlider;
 	SliderCtx.fillRect(0, 0, SliderCtx.canvas.width, SliderCtx.canvas.height);
 
-	const preview = document.getElementById("preview");
-
-	const canvasBounds = colorCanvas.getBoundingClientRect();
+	let canvasBounds = colorCanvas.getBoundingClientRect();
 	const canvasMarker = colorCanvas.nextElementSibling;
-	canvasMarker.style.left = localStorage.getItem("canvasMarkerX") ?? canvasBounds.left - 8;
-	canvasMarker.style.top = localStorage.getItem("canvasMarkerY") ?? canvasBounds.top - 8;
+	canvasMarker.style.top = -7;
+	canvasMarker.style.left = -7;
 
-	const sliderBounds = colorSlider.getBoundingClientRect();
+	let sliderBounds = colorSlider.getBoundingClientRect();
 	const sliderMarker = colorSlider.nextElementSibling;
-	sliderMarker.style.left = sliderBounds.left - 3;
-	sliderMarker.style.top = localStorage.getItem("sliderMarker") ?? sliderBounds.top - 8;
+	sliderMarker.style.top = -3;
+	sliderMarker.style.left = -7;
+
+	positionColorPicker();
+	window.addEventListener("resize", () => {
+		positionColorPicker();
+		canvasBounds = colorCanvas.getBoundingClientRect();
+		sliderBounds = colorSlider.getBoundingClientRect();
+	});
+
+	const rgbInput = Array.from(document.getElementById("input-wrapper").children).filter(
+		(elmnt) => elmnt.tagName === "INPUT"
+	);
+	[rgbInput[0], rgbInput[1], rgbInput[2]].forEach((elmnt) => {
+		elmnt.addEventListener("input", () => {
+			applyTextInput("rgb");
+		});
+	});
+	rgbInput[3].addEventListener("input", () => {
+		applyTextInput("hex");
+	});
+
+	let pixel;
+
+	const rgbStr = parent.style.background;
+	const initialRGB = rgbStr
+		.substring(4, rgbStr.length - 1)
+		.split(", ")
+		.map((str) => {
+			return Number(str);
+		});
+
+	updateColorInput(initialRGB);
+	applyTextInput("rgb");
 
 	updateSliderMarkerColor();
-	updateCanvasMarkerColor();
 
 	colorCanvas.addEventListener("mousedown", (event) => {
-		canvasMarker.style.top = event.clientY - 8;
-		canvasMarker.style.left = event.clientX - 8;
-
-		localStorage.setItem("canvasMarkerX", canvasMarker.offsetLeft);
-		localStorage.setItem("canvasMarkerY", canvasMarker.offsetTop);
+		canvasMarker.style.left = event.clientX - canvasBounds.left - 7;
+		canvasMarker.style.top = event.clientY - canvasBounds.top - 7;
 
 		updateCanvasMarkerColor();
 
@@ -54,9 +78,7 @@ export function createColorPicker() {
 	});
 
 	colorSlider.addEventListener("mousedown", (event) => {
-		sliderMarker.style.top = event.clientY - 8;
-
-		localStorage.setItem("sliderMarker", sliderMarker.offsetTop);
+		sliderMarker.style.left = event.clientX - sliderBounds.left - 7;
 
 		updateSliderMarkerColor();
 
@@ -72,9 +94,7 @@ export function createColorPicker() {
 		function dragMouseDown(e) {
 			e = e || window.event;
 			e.preventDefault();
-			// get the mouse cursor position at startup:
 			document.onmouseup = closeDragElement;
-			// call a function whenever the cursor moves:
 			document.onmousemove = elementDrag;
 		}
 
@@ -82,7 +102,7 @@ export function createColorPicker() {
 			e = e || window.event;
 			e.preventDefault();
 
-			onDrag(e, elmnt);
+			onDrag(e);
 		}
 
 		function closeDragElement() {
@@ -92,68 +112,97 @@ export function createColorPicker() {
 	}
 
 	function updateCanvasMarkerColor() {
-		let x = canvasMarker.offsetLeft - canvasBounds.left + 8;
-		let y = canvasMarker.offsetTop - canvasBounds.top + 8;
-		const pixel = CanvasCtx.getImageData(x, y, 1, 1)["data"];
+		let x = canvasMarker.offsetLeft + 7;
+		let y = canvasMarker.offsetTop + 7;
+		pixel = CanvasCtx.getImageData(x, y, 1, 1)["data"];
 		const rgb = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
 		canvasMarker.style.background = rgb;
-		preview.style.background = rgb;
+		parent.style.background = rgb;
+
+		parent.dispatchEvent(new Event("change"));
 	}
 
 	function updateSliderMarkerColor() {
-		let y = sliderMarker.offsetTop - sliderBounds.top + 8;
-		const pixel = SliderCtx.getImageData(1, y, 1, 1)["data"];
-		const rgb = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
-		sliderMarker.style.background = rgb;
+		let x = sliderMarker.offsetLeft + 8;
+		const pixel = SliderCtx.getImageData(x, 1, 1, 1)["data"];
+		const hue = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+		sliderMarker.style.background = hue;
 
 		updateCanvas({
 			r: pixel[0],
 			g: pixel[1],
 			b: pixel[2],
 		});
-	}
-
-	function dragCanvasMarker(event, elmnt) {
-		const x = event.clientX;
-		const y = event.clientY;
-
-		if (y < canvasBounds.top) {
-			elmnt.style.top = canvasBounds.top - 7;
-		} else if (y > canvasBounds.bottom) {
-			elmnt.style.top = canvasBounds.bottom - 9;
-		} else {
-			elmnt.style.top = y - 8;
-		}
-
-		if (x < canvasBounds.left) {
-			elmnt.style.left = canvasBounds.left - 7;
-		} else if (x > canvasBounds.right) {
-			elmnt.style.left = canvasBounds.right - 9;
-		} else {
-			elmnt.style.left = x - 8;
-		}
-
-		localStorage.setItem("canvasMarkerX", elmnt.offsetLeft);
-		localStorage.setItem("canvasMarkerY", elmnt.offsetTop);
 
 		updateCanvasMarkerColor();
 	}
 
-	function dragSliderMarker(event, elmnt) {
-		const y = event.clientY;
+	function dragCanvasMarker(event) {
+		let x = event.clientX - canvasBounds.left;
+		let y = event.clientY - canvasBounds.top;
 
-		if (y < sliderBounds.top) {
-			elmnt.style.top = sliderBounds.top - 8;
-		} else if (y > sliderBounds.bottom) {
-			elmnt.style.top = sliderBounds.bottom - 8;
-		} else {
-			elmnt.style.top = y - 8;
+		if (x < 1) {
+			x = 1;
+		} else if (x > 255) {
+			x = 255;
 		}
 
-		localStorage.setItem("sliderMarker", elmnt.offsetTop);
+		if (y < 1) {
+			y = 1;
+		} else if (y > 256) {
+			y = 256;
+		}
+
+		canvasMarker.style.left = x - 8;
+		canvasMarker.style.top = y - 8;
+
+		updateCanvasMarkerColor();
+
+		updateColorInput();
+	}
+
+	function dragSliderMarker(event) {
+		let x = event.clientX - sliderBounds.left;
+
+		if (x < 0) {
+			x = 0;
+		} else if (x > 359) {
+			x = 359;
+		}
+
+		sliderMarker.style.left = x - 8;
 
 		updateSliderMarkerColor();
-		updateCanvasMarkerColor();
+
+		updateColorInput();
+	}
+
+	function applyTextInput(type) {
+		if (type === "rgb") {
+			rgbInput[3].value = rgbToHex(rgbInput[0].value, rgbInput[1].value, rgbInput[2].value);
+		} else if (type === "hex") {
+		}
+
+		const hsv = rgb2hsv(rgbInput[0].value, rgbInput[1].value, rgbInput[2].value);
+		canvasMarker.style.top = 255 - hsv[2] - 8;
+		canvasMarker.style.left = 255 * hsv[1] - 8;
+		sliderMarker.style.left = hsv[0] - 8;
+
+		updateSliderMarkerColor();
+	}
+
+	function updateColorInput(rgb) {
+		if (rgb !== undefined) {
+			rgbInput[0].value = rgb[0];
+			rgbInput[1].value = rgb[1];
+			rgbInput[2].value = rgb[2];
+			rgbInput[3].value = rgbToHex(rgb[0], rgb[1], rgb[2]);
+		} else {
+			rgbInput[0].value = pixel[0];
+			rgbInput[1].value = pixel[1];
+			rgbInput[2].value = pixel[2];
+			rgbInput[3].value = rgbToHex(pixel[0], pixel[1], pixel[2]);
+		}
 	}
 
 	function updateCanvas(sliderColor) {
@@ -164,47 +213,100 @@ export function createColorPicker() {
 		CanvasCtx.fillStyle = gradientH;
 		CanvasCtx.fillRect(0, 0, CanvasCtx.canvas.width, CanvasCtx.canvas.height);
 
-		let gradientV = CanvasCtx.createLinearGradient(0, 0, 0, 300);
+		let gradientV = CanvasCtx.createLinearGradient(0, 0, 0, 255);
 		gradientV.addColorStop(0, "rgba(0,0,0,0)");
 		gradientV.addColorStop(1, "#000");
 		CanvasCtx.fillStyle = gradientV;
 		CanvasCtx.fillRect(0, 0, CanvasCtx.canvas.width, CanvasCtx.canvas.height);
+	}
+
+	function positionColorPicker() {
+		const colorBounds = parent.getBoundingClientRect();
+		const colorPickerBounds = colorPickerWrapper.getBoundingClientRect();
+		const formBounds = document.getElementsByClassName("modal-content")[0].getBoundingClientRect();
+		const colorListBounds = document.getElementById("gradient-colors").getBoundingClientRect();
+
+		colorPickerWrapper.style.top = colorBounds.top + 30 - formBounds.top;
+		colorPickerWrapper.style.left = colorListBounds.width / 2 - colorPickerBounds.width / 2;
+
+		canvasBounds = colorCanvas.getBoundingClientRect();
+		sliderBounds = colorSlider.getBoundingClientRect();
 	}
 }
 
 function create() {
 	const wrapper = document.createElement("div");
 	wrapper.setAttribute("id", "color-picker-wrapper");
-
-	const preview = document.createElement("div");
-	preview.setAttribute("id", "preview");
+	wrapper.style.position = "absolute";
 
 	const selectionWrapper = document.createElement("div");
-	selectionWrapper.style.display = "flex";
 	selectionWrapper.style.marginTop = "5px";
 
+	const canvasWrapper = document.createElement("div");
+	canvasWrapper.style.position = "relative";
+	canvasWrapper.setAttribute("id", "canvas-wrapper");
 	const colorCanvas = document.createElement("canvas");
 	colorCanvas.setAttribute("id", "color-canvas");
-	colorCanvas.setAttribute("width", "300px");
-	colorCanvas.setAttribute("height", "300px");
-
+	colorCanvas.setAttribute("width", "255px");
+	colorCanvas.setAttribute("height", "255px");
 	const canvasMarker = document.createElement("div");
 	canvasMarker.setAttribute("id", "canvas-marker");
 
+	const sliderWrapper = document.createElement("div");
+	sliderWrapper.style.position = "relative";
+	sliderWrapper.setAttribute("id", "slider-wrapper");
 	const sliderCanvas = document.createElement("canvas");
 	sliderCanvas.setAttribute("id", "color-slider");
-	sliderCanvas.setAttribute("width", "30px");
-	sliderCanvas.setAttribute("height", "300px");
-
+	sliderCanvas.setAttribute("width", "360px");
+	sliderCanvas.setAttribute("height", "30px");
 	const sliderMarker = document.createElement("div");
 	sliderMarker.setAttribute("id", "slider-marker");
 
-	wrapper.append(preview);
-	wrapper.append(selectionWrapper);
-	selectionWrapper.appendChild(colorCanvas);
-	selectionWrapper.appendChild(canvasMarker);
-	selectionWrapper.appendChild(sliderCanvas);
-	selectionWrapper.appendChild(sliderMarker);
+	const inputWrapper = document.createElement("div");
+	inputWrapper.setAttribute("id", "input-wrapper");
+
+	const rLabel = document.createElement("span");
+	rLabel.textContent = "R:";
+	const r = document.createElement("input");
+	r.style.width = "50px";
+	r.setAttribute("class", "color-input");
+
+	const gLabel = document.createElement("span");
+	gLabel.textContent = "G:";
+	const g = document.createElement("input");
+	g.style.width = "50px";
+	g.setAttribute("class", "color-input");
+
+	const bLabel = document.createElement("span");
+	bLabel.textContent = "B:";
+	const b = document.createElement("input");
+	b.style.width = "50px";
+	b.setAttribute("class", "color-input");
+
+	const hexLabel = document.createElement("span");
+	hexLabel.textContent = "HEX:";
+	const hex = document.createElement("input");
+	hex.style.width = "100px";
+	hex.setAttribute("class", "color-input");
+
+	sliderWrapper.appendChild(sliderCanvas);
+	sliderWrapper.appendChild(sliderMarker);
+	wrapper.appendChild(sliderWrapper);
+
+	canvasWrapper.appendChild(colorCanvas);
+	canvasWrapper.appendChild(canvasMarker);
+	wrapper.appendChild(canvasWrapper);
+
+	wrapper.appendChild(inputWrapper);
+
+	inputWrapper.appendChild(rLabel);
+	inputWrapper.appendChild(r);
+	inputWrapper.appendChild(gLabel);
+	inputWrapper.appendChild(g);
+	inputWrapper.appendChild(bLabel);
+	inputWrapper.appendChild(b);
+	inputWrapper.appendChild(hexLabel);
+	inputWrapper.appendChild(hex);
 
 	return wrapper;
 }

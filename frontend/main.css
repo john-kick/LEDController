@@ -38,8 +38,10 @@ body {
 	color: var(--fontColor);
 }
 
-#gradient-container {
-	padding: 10px;
+#gradients-container {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0px 10px 10px 0px;
 	height: fit-content;
 	width: fit-content;
 	background-color: rgba(52, 40, 100, 0.3);
@@ -50,9 +52,43 @@ body {
 }
 
 #gradient-preview {
-	height: 200px;
+	height: 100px;
 	width: 100%;
 	border-radius: 5px;
+}
+
+.gradient-wrapper {
+	margin: 10px;
+	width: 300px;
+	height: 150px;
+}
+
+.gradient-header {
+	height: 35px;
+	width: 300px;
+	background-color: rgba(0, 0, 0, 0.2);
+	z-index: 3;
+	position: absolute;
+	border-radius: 16px 16px 0px 0px;
+}
+
+.gradient-name {
+	transform: translateX(40px) translateY(3px);
+}
+
+.gradient {
+	position: absolute;
+	border-radius: 20px;
+	z-index: 1;
+	border: 5px solid #1b1836;
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.selected {
+	border: 5px solid rgb(0, 0, 255);
 }
 
 .gradient-color {
@@ -78,14 +114,26 @@ body {
 	width: 30px;
 }
 
-.color-input {
-	width: 60px;
+.color-input,
+.color-location,
+#gradient-name-input {
+	margin-right: 5px;
 	margin-left: 5px;
 	background-color: #112;
 	border: 1px solid #224;
 	border-radius: 5px;
 	text-align: center;
 	color: var(--fontColor);
+}
+
+.color-input,
+.color-location {
+	width: 60px;
+}
+
+#gradient-name-input {
+	width: 300px;
+	height: 38px;
 }
 
 .form-button {
@@ -130,11 +178,11 @@ body {
 .modal {
 	display: none;
 	position: fixed;
-	z-index: 1;
+	z-index: 3;
 	left: 0;
 	top: 0;
 	width: 100%;
-	height: fit-content;
+	height: 100%;
 	overflow: auto;
 	background-color: rgb(0, 0, 0);
 	background-color: rgba(0, 0, 0, 0.4);
@@ -142,10 +190,11 @@ body {
 
 .modal-content {
 	background-color: var(--formBg);
-	margin: 15% auto;
 	padding: 20px;
 	border: 1px solid #888;
 	width: 80%;
+	max-width: 800px;
+	top: 100px;
 }
 
 .test-gradient {
@@ -153,60 +202,93 @@ body {
 }
 
 #color-canvas {
+	margin-bottom: 10px;
 	border-radius: 5px;
 	position: relative;
-	margin-right: 15px;
 }
 
 #color-slider {
+	margin-bottom: 10px;
 	border-radius: 5px;
 	position: relative;
 }
 
 #color-picker-wrapper {
-	background-color: rgba(0, 0, 0, 0.1);
+	background-color: var(--mainBg);
 	border: 1px solid #fff;
 	border-radius: 5px;
-	padding: 5px;
+	padding: 15px;
 	height: fit-content;
 	width: fit-content;
-}
-
-#preview {
-	background-color: rgba(0, 0, 0, 0.1);
-	border-radius: 5px;
-	height: 30px;
-	width: 300px;
+	z-index: 2;
 }
 
 #canvas-marker {
 	position: absolute;
-	height: 16px;
-	width: 16px;
+	height: 15px;
+	width: 15px;
 	border: 1px solid #fff;
-	border-radius: 16px;
-
+	border-radius: 15px;
 	box-shadow: 0 0 0 1px hsl(0, 0%, 80%);
 }
 
 #slider-marker {
 	position: absolute;
-	height: 16px;
-	width: 36px;
+	height: 36px;
+	width: 15px;
 	border: 1px solid #fff;
-	border-radius: 6px;
+	border-radius: 5px;
+	box-shadow: 0 0 0 1px hsl(0, 0%, 80%);
+}
+
+#input-wrapper {
+	margin-top: 5px;
 }
 
 .close {
-	color: #aaa;
-	float: right;
-	font-size: 28px;
-	font-weight: bold;
+	cursor: pointer;
 }
 
-.close:hover,
-.close:focus {
+.form-error {
+	color: #f00;
+	background-color: #fff;
+	border: #000 solid 1px;
+	border-radius: 5px;
+	padding: 5px;
+	width: fit-content;
+}
+
+.gradient:hover,
+.gradient:focus {
 	color: black;
 	text-decoration: none;
 	cursor: pointer;
+}
+
+.remove-gradient {
+	position: absolute;
+	width: 32px;
+	height: 32px;
+	opacity: 0.3;
+	z-index: 2;
+	margin: 2px;
+}
+.remove-gradient:hover {
+	opacity: 1;
+}
+.remove-gradient:before,
+.remove-gradient:after {
+	position: absolute;
+	left: 15px;
+	content: " ";
+	height: 33px;
+	width: 2px;
+	background-color: #333;
+	border: 1px solid #000;
+}
+.remove-gradient:before {
+	transform: rotate(45deg);
+}
+.remove-gradient:after {
+	transform: rotate(-45deg);
 }
