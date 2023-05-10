@@ -1,22 +1,28 @@
-import { getGradients, removeGradient } from "./gradientOperations.js";
+import { getGradients, removeGradient } from "./gradientOperations";
+
+interface gradColor {
+	color: string,
+	position: string
+}
 
 const buttons = [
-	{ name: "empty", command: "none" },
-	{ name: "red", command: "full FF0000" },
-	{ name: "green", command: "full 00FF00" },
-	{ name: "blue", command: "full 0000FF" },
-	{ name: "rainbow", command: "rainbow" },
+	{ name: "empty", command: "empty" },
+	{ name: "red", command: "fill 255 0 0" },
+	{ name: "green", command: "fill 0 255 0" },
+	{ name: "blue", command: "fill 0 0 255" },
+	{ name: "fade", command: "fade 0.5" },
+	{ name: "rainbow", command: "rainbow 0.5" },
 	{ name: "vapor", command: "vapor" },
-	{ name: "test", command: "test" },
+	{ name: "test", command: "fade" },
 ];
 
-const manualInputSubmit = document.getElementById("manualInputSubmit");
+const manualInputSubmit = document.getElementById("manualInputSubmit") as HTMLButtonElement;
 manualInputSubmit.addEventListener("click", () => {
-	const input = document.getElementById("manualInput").value;
+	const input = (document.getElementById("manualInput") as HTMLInputElement).value;
 	send(input);
 });
 
-const buttonContainer = document.getElementById("button-container");
+const buttonContainer = document.getElementById("button-container") as HTMLDivElement;
 
 buttons.forEach((button) => {
 	const buttonElem = document.createElement("button");
@@ -24,7 +30,7 @@ buttons.forEach((button) => {
 	buttonElem.setAttribute("class", "btn btn-lg btn-cmd");
 
 	buttonElem.addEventListener("click", async () => {
-		send(button.command);
+		send("animation " + button.command);
 	});
 
 	buttonElem.textContent = button.name;
@@ -32,10 +38,10 @@ buttons.forEach((button) => {
 	buttonContainer.appendChild(buttonElem);
 });
 
-const sliders = document.getElementsByClassName("slider");
+const sliders = document.getElementsByClassName("slider") as HTMLCollectionOf<HTMLInputElement>;
 for (let slider of sliders) {
-	const name = slider.getAttribute("id");
-	slider.value = localStorage.getItem(name) ?? 50;
+	const name = slider.getAttribute("id") ?? "";
+	slider.value = localStorage.getItem(name) ?? "50";
 	slider.addEventListener("input", async () => {
 		localStorage.setItem(name, slider.value);
 		const cmd = name + " " + slider.value;
@@ -47,7 +53,7 @@ getGradients().then((gradients) => {
 	displayGradients(gradients);
 });
 
-const applyButton = document.getElementById("apply-gradient");
+const applyButton = document.getElementById("apply-gradient") as HTMLButtonElement;
 applyButton.addEventListener("click", () => {
 	const selected = document.getElementsByClassName("selected")[0];
 	fetch("/applyGradient", {
@@ -55,14 +61,12 @@ applyButton.addEventListener("click", () => {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({
-			gradient: selected,
-		}),
+		body: JSON.stringify({ name: selected.getAttribute("name") ?? "" }),
 	});
 });
 
-function send(cmd) {
-	fetch("/sendCommand", {
+function send(cmd: string) {
+	fetch("/command", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -73,8 +77,8 @@ function send(cmd) {
 	});
 }
 
-function displayGradients(gradients) {
-	const gradientContainer = document.getElementById("gradients-container");
+function displayGradients(gradients: String[]) {
+	const gradientContainer = document.getElementById("gradients-container") as HTMLDivElement;
 	if (Object.keys(gradients).length === 0) {
 		gradientContainer.toggleAttribute("hidden");
 		return;
@@ -84,9 +88,9 @@ function displayGradients(gradients) {
 		if (Object.prototype.hasOwnProperty.call(gradients, gradient)) {
 			var background = "linear-gradient(to right";
 
-			const colors = eval("gradients." + gradient);
+			const colors: gradColor[] = Object.values(eval("gradients." + gradient));
 
-			colors.forEach((color) => {
+			colors.forEach((color: gradColor) => {
 				background += ", " + color.color + " " + color.position + "%";
 			});
 			background += ")";
@@ -96,10 +100,10 @@ function displayGradients(gradients) {
 			const canvas = document.createElement("canvas");
 			canvas.setAttribute("class", "gradient");
 			canvas.style.background = background;
-			canvas.name = gradient;
+			canvas.setAttribute("name", gradient);
 			canvas.addEventListener("click", () => {
 				const prev = document.getElementsByClassName("selected")[0];
-				const editButton = document.getElementById("edit-gradient");
+				const editButton = document.getElementById("edit-gradient") as HTMLButtonElement;
 				if (prev) {
 					prev.classList.remove("selected");
 					editButton.classList.add("disabled");
@@ -122,7 +126,7 @@ function displayGradients(gradients) {
 			remove.href = "#";
 			remove.setAttribute("class", "remove-gradient");
 			remove.addEventListener("click", () => {
-				removeGradient(canvas.name);
+				removeGradient(canvas.getAttribute("name") ?? "");
 				setTimeout(function () {
 					window.location.reload();
 				}, 10);
@@ -137,8 +141,8 @@ function displayGradients(gradients) {
 			header.appendChild(title);
 			gradientContainer.appendChild(wrapper);
 
-			header.style.top = header.getBoundingClientRect().top + 5;
-			header.style.left = header.getBoundingClientRect().left + 5;
+			header.style.top = (header.getBoundingClientRect().top + 5).toString();
+			header.style.left = (header.getBoundingClientRect().left + 5).toString();
 		}
 	}
 }

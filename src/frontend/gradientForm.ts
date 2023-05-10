@@ -1,13 +1,13 @@
-import { createColorPicker } from "./colorPicker.js";
-import { addGradient, getGradients, editGradient } from "./gradientOperations.js";
+import { createColorPicker } from "./colorPicker";
+import { addGradient, getGradients, editGradient } from "./gradientOperations";
 
-const modal = document.getElementById("gradient-modal");
-const modalContent = document.getElementsByClassName("modal-content")[0];
-const addGradientButton = document.getElementById("add-gradient");
-const editGradientButton = document.getElementById("edit-gradient");
-const header = document.getElementsByClassName("close")[0];
+const modal = document.getElementById("gradient-modal") as HTMLDivElement;
+const modalContent = document.getElementsByClassName("modal-content")[0] as HTMLDivElement;
+const addGradientButton = document.getElementById("add-gradient") as HTMLButtonElement;
+const editGradientButton = document.getElementById("edit-gradient") as HTMLButtonElement;
+const header = document.getElementsByClassName("close")[0] as HTMLButtonElement;
 let mode = "add";
-let oldName = null;
+let oldName = "";
 
 window.addEventListener("resize", resize);
 
@@ -20,20 +20,20 @@ addGradientButton.onclick = () => {
 editGradientButton.onclick = () => {
 	mode = "edit";
 	modal.style.display = "block";
-	const selected = document.getElementsByClassName("selected")[0];
-	oldName = selected.name;
+	const selected = document.getElementsByClassName("selected")[0] as HTMLCanvasElement;
+	oldName = selected.getAttribute("name") ?? "";
 
-	const buttons = document.getElementsByClassName("remove-color");
+	const buttons = document.getElementsByClassName("remove-color") as HTMLCollectionOf<HTMLButtonElement>;
 	while (buttons.length !== 0) {
 		removeGradientColor(buttons[0]);
 	}
-	document.getElementById("gradient-name-input").value = oldName;
+	(document.getElementById("gradient-name-input") as HTMLInputElement).value = oldName;
 	resize();
 
 	let background = selected.style.background;
 	let rgbstr = background.substring(26, background.lastIndexOf(")"));
 
-	let colors = [];
+	let colors: string[] = [];
 	while (rgbstr !== "") {
 		colors.push(rgbstr.substring(0, rgbstr.indexOf("%")));
 		rgbstr = rgbstr.substring(rgbstr.indexOf("%") + 3);
@@ -41,7 +41,7 @@ editGradientButton.onclick = () => {
 
 	colors.forEach((color) => {
 		let rgbp = [color.substring(4, color.indexOf(")")).split(","), color.substring(color.indexOf(") ") + 2)];
-		addGradientColor(rgbp[0][0], rgbp[0][1], rgbp[0][2], rgbp[1]);
+		addGradientColor(Number(rgbp[0][0]), Number(rgbp[0][1]), Number(rgbp[0][2]), Number(rgbp[1]));
 	});
 	refreshGradientPreview();
 };
@@ -67,18 +67,19 @@ colorDummy.setAttribute("class", "gradient-color");
 const inputDummy = document.createElement("input");
 inputDummy.setAttribute("class", "color-location");
 
-const form = document.getElementById("gradient-form");
-const gradientColorContainer = document.getElementById("gradient-colors");
-const addGradientColorButton = document.getElementById("add-gradient-color");
+const form = document.getElementById("gradient-form") as HTMLFormElement;
+const gradientColorContainer = document.getElementById("gradient-colors") as HTMLDivElement;
+const addGradientColorButton = document.getElementById("add-gradient-color") as HTMLButtonElement;
 
-let prevClickedColor;
+const placeholderColor: HTMLDivElement = document.createElement("div");
+let prevClickedColor: HTMLDivElement = placeholderColor;
 
 addGradientColorButton.addEventListener("click", () => {
 	addGradientColor();
 });
 addGradientColor();
 
-function addGradientColor(r, g, b, p) {
+function addGradientColor(r?: number, g?: number, b?: number, p?: number) {
 	r = r || 0;
 	g = g || 255;
 	b = b || 255;
@@ -88,7 +89,7 @@ function addGradientColor(r, g, b, p) {
 	div.setAttribute("class", "color-container");
 	gradientColorContainer.appendChild(div);
 
-	const colorClone = colorDummy.cloneNode(true);
+	const colorClone = colorDummy.cloneNode(true) as HTMLDivElement;
 	colorClone.setAttribute("style", "background: rgb(" + r + ", " + g + ", " + b + ")");
 
 	colorClone.addEventListener("mousedown", (event) => {
@@ -101,13 +102,13 @@ function addGradientColor(r, g, b, p) {
 		refreshGradientPreview();
 	});
 
-	const buttonClone = removeColorDummy.cloneNode(true);
+	const buttonClone = removeColorDummy.cloneNode(true) as HTMLButtonElement;
 	buttonClone.addEventListener("click", () => {
 		removeGradientColor(buttonClone);
 		refreshGradientPreview();
 	});
 
-	const inputClone = inputDummy.cloneNode(true);
+	const inputClone = inputDummy.cloneNode(true) as HTMLInputElement;
 	inputClone.addEventListener("input", () => {
 		refreshGradientPreview();
 	});
@@ -116,7 +117,7 @@ function addGradientColor(r, g, b, p) {
 	div.appendChild(colorClone);
 	div.appendChild(inputClone);
 
-	inputClone.value = p ?? (numColors === 0 ? 0 : 100);
+	inputClone.value = (p ?? (numColors === 0 ? 0 : 100)).toString();
 
 	if (numColors === 5) {
 		addGradientColorButton.toggleAttribute("hidden");
@@ -124,45 +125,48 @@ function addGradientColor(r, g, b, p) {
 	refreshGradientPreview();
 }
 
-function removeGradientColor(button) {
+function removeGradientColor(button: HTMLButtonElement) {
+	if (!button.parentElement) {
+		throw new Error("The button is supposed to have a parent element");
+	}
 	button.parentElement.remove();
-	prevClickedColor = null;
 	if (gradientColorContainer.getElementsByClassName("gradient-color").length === 4) {
 		addGradientColorButton.toggleAttribute("hidden");
 	}
 }
 
-function createColorPickerOnColor(color) {
-	if (!prevClickedColor) {
+function createColorPickerOnColor(color: HTMLDivElement) {
+	if (prevClickedColor === placeholderColor) {
 		appendColorPicker(color);
+		prevClickedColor = color;
 	} else {
+		closeColorPicker();
 		if (color === prevClickedColor) {
-			closeColorPicker();
-			prevClickedColor = null;
+			prevClickedColor = placeholderColor;
 		} else {
-			closeColorPicker();
 			appendColorPicker(color);
+			prevClickedColor = color
 		}
 	}
 }
 
-function appendColorPicker(color) {
+function appendColorPicker(color: HTMLDivElement) {
 	createColorPicker(color);
 	prevClickedColor = color;
 }
 
 function closeColorPicker() {
-	document.getElementById("color-picker-wrapper").remove();
+	(document.getElementById("color-picker-wrapper") as HTMLDivElement).remove();
 }
 
 function resize() {
-	modalContent.style.left = window.innerWidth / 2 - modalContent.getBoundingClientRect().width / 2;
+	modalContent.style.left = (window.innerWidth / 2 - modalContent.getBoundingClientRect().width / 2).toString();
 }
 
 function refreshGradientPreview() {
-	const gradientPreview = document.getElementById("gradient-preview");
-	const colorElements = document.getElementsByClassName("gradient-color");
-	const colorLocations = document.getElementsByClassName("color-location");
+	const gradientPreview = document.getElementById("gradient-preview") as HTMLDivElement;
+	const colorElements = document.getElementsByClassName("gradient-color") as HTMLCollectionOf<HTMLDivElement>;
+	const colorLocations = document.getElementsByClassName("color-location") as HTMLCollectionOf<HTMLInputElement>;
 
 	if (colorElements.length === 1) {
 		gradientPreview.style.background = colorElements[0].style.background;
@@ -180,16 +184,16 @@ function refreshGradientPreview() {
 form.onsubmit = async (event) => {
 	event.preventDefault();
 
-	const colorElements = document.getElementsByClassName("gradient-color");
-	const colorLocations = document.getElementsByClassName("color-location");
-	const gradientName = document.getElementById("gradient-name-input").value;
+	const colorElements = document.getElementsByClassName("gradient-color") as HTMLCollectionOf<HTMLDivElement>;
+	const colorLocations = document.getElementsByClassName("color-location") as HTMLCollectionOf<HTMLInputElement>;
+	const gradientName = (document.getElementById("gradient-name-input") as HTMLInputElement).value;
 
 	if (colorElements.length < 2) {
 		displayFormError("Gradients need at least 2 colors");
 		return;
 	}
 
-	var nameExists;
+	var nameExists: boolean = false;
 	await doesNameExist(gradientName).then((res) => {
 		nameExists = res;
 	});
@@ -201,18 +205,18 @@ form.onsubmit = async (event) => {
 		}
 	}
 
-	let obj;
-	eval("obj = { 'grad': {" + gradientName + ": []}}");
+	let obj: Object = {};
+	eval("obj = { " + gradientName + ": []}");
 
 	for (let i = 0; i < colorElements.length; i++) {
 		const rgbVal = colorElements[i].style.background.replace(/\s+/g, "");
 		eval(
-			"obj.grad." + gradientName + ".push({" + "color:rgbVal," + "position: " + "colorLocations[i].value" + "})"
+			"obj." + gradientName + ".push({" + "color:rgbVal," + "position: " + "colorLocations[i].value" + "})"
 		);
 	}
 
 	if (mode === "edit") {
-		obj._replace = oldName;
+		// obj._replace = oldName;
 		const json = JSON.stringify(obj);
 		editGradient(json);
 	} else {
@@ -231,7 +235,7 @@ form.onsubmit = async (event) => {
 	}, 10);
 };
 
-async function doesNameExist(name) {
+async function doesNameExist(name: string) {
 	const gradients = await getGradients();
 	for (var gradient in gradients) {
 		if (Object.prototype.hasOwnProperty.call(gradients, gradient)) {
@@ -243,7 +247,7 @@ async function doesNameExist(name) {
 	return false;
 }
 
-function displayFormError(msg) {
+function displayFormError(msg: string) {
 	var error = document.getElementsByClassName("form-error")[0];
 
 	if (!error) {

@@ -1,26 +1,31 @@
 import fs from "fs";
-import { sendMsg } from "./connector.js";
+import { send } from "./connector.js";
 import { getPosition } from "./util.js";
+import express, { Request, Response } from "express";
+import path from "path";
 
-export function addGradient(obj) {
-	fs.readFile("gradients.json", "utf8", (err, data) => {
+const baseDirName = path.resolve(path.dirname(""));
+const gradientJsonPath = path.join(baseDirName, "/src/backend", "gradients.json");
+
+export function addGradient(obj: string) {
+	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
 			return;
 		}
 		var grads = data.substring(data.indexOf("{") + 1, data.lastIndexOf("}"));
-		var gradStr = JSON.stringify(obj.grad);
+		var gradStr = JSON.stringify(obj);
 		var newGrad = gradStr.substring(1, gradStr.length - 1);
 		if (grads.length > 1) {
 			grads += ",";
 		}
 		grads = "{" + grads + newGrad + "}";
-		fs.writeFile("gradients.json", grads, "utf8", () => {});
+		fs.writeFile(gradientJsonPath, grads, "utf8", () => { });
 	});
 }
 
-export function removeGradient(name) {
-	fs.readFile("gradients.json", "utf8", (err, data) => {
+export function removeGradient(name: string) {
+	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
 			return;
@@ -43,50 +48,51 @@ export function removeGradient(name) {
 		}
 		newJson += "}";
 
-		fs.writeFile("gradients.json", newJson, "utf8", () => {});
+		fs.writeFile(gradientJsonPath, newJson, "utf8", () => { });
 	});
 }
 
-export function editGradient(obj) {
-	fs.readFile("gradients.json", "utf8", (err, data) => {
+export function editGradient(obj: string) {
+	console.log(obj);
+	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
 			return;
 		}
 
-		const newGradRaw = JSON.stringify(obj.grad);
+		const newGradRaw = JSON.stringify(obj);
 		var newGrad = newGradRaw.substring(1, newGradRaw.length - 1);
 
 		const gradArr = gradientsToArray(data);
 
 		gradArr.forEach((grad, index) => {
-			if (grad.substring(grad.indexOf('"') + 1, getPosition(grad, '"', 2)) === obj._replace) {
+			if (grad.substring(grad.indexOf('"') + 1, getPosition(grad, '"', 2)) === obj) {
 				gradArr[index] = newGrad;
 			}
 		});
 
-		fs.writeFile("gradients.json", "{" + gradArr.join(",") + "}", "utf8", () => {});
+		fs.writeFile(gradientJsonPath, "{" + gradArr.join(",") + "}", "utf8", () => { });
 	});
 }
 
-export function applyGradient(gradient) {
-	fs.readFile("gradients.json", "utf8", (err, data) => {
+export function applyGradient(gradientName: { name: string }) {
+	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
 			return;
 		}
 
 		const gradArr = gradientsToArray(data);
-		gradArr.forEach((grad) => {
-			if (grad.substring(grad.indexOf('"') + 1, getPosition(grad, '"', 2)) === gradient.name) {
-				sendMsg("gradient " + grad.substring(grad.indexOf("[") + 1, grad.indexOf("]")));
+		gradArr.forEach((gradient) => {
+			if (gradient.substring(gradient.indexOf('"') + 1, getPosition(gradient, '"', 2)) === gradientName.name) {
 				return;
 			}
 		});
+
 	});
 }
 
-function gradientsToArray(str) {
+function gradientsToArray(str: string) {
 	str = str.substring(1, str.lastIndexOf("}"));
 	var arr = [];
 

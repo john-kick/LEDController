@@ -1,5 +1,8 @@
 bootstrap-5.2.2-dist/
 node_modules/
+dist/
 
 package-lock.json
 prettierignore
+test.ts
+gradients.json

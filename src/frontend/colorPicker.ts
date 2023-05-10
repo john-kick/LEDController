@@ -1,16 +1,22 @@
-import { rgbToHex, rgb2hsv } from "./util.js";
+import { rgbToHex, rgb2hsv } from "./util";
 
-export function createColorPicker(parent) {
+interface RGB {
+	r: number,
+	g: number,
+	b: number
+}
+
+export function createColorPicker(parent: HTMLElement) {
 	parent = parent || document.getElementsByClassName("content")[0];
 
 	const colorPickerWrapper = create();
 	parent.append(colorPickerWrapper);
 
-	const colorCanvas = document.getElementById("color-canvas");
-	const CanvasCtx = colorCanvas.getContext("2d");
+	const colorCanvas: HTMLCanvasElement = document.getElementById("color-canvas") as HTMLCanvasElement;
+	const CanvasCtx = colorCanvas.getContext("2d") as CanvasRenderingContext2D;
 
-	const colorSlider = document.getElementById("color-slider");
-	const SliderCtx = colorSlider.getContext("2d");
+	const colorSlider = document.getElementById("color-slider") as HTMLCanvasElement;
+	const SliderCtx = colorSlider.getContext("2d") as CanvasRenderingContext2D;
 
 	let gradientSlider = SliderCtx.createLinearGradient(0, 0, 360, 0);
 	gradientSlider.addColorStop(0 / 6.0, "rgb(255, 0, 0)");
@@ -25,14 +31,14 @@ export function createColorPicker(parent) {
 	SliderCtx.fillRect(0, 0, SliderCtx.canvas.width, SliderCtx.canvas.height);
 
 	let canvasBounds = colorCanvas.getBoundingClientRect();
-	const canvasMarker = colorCanvas.nextElementSibling;
-	canvasMarker.style.top = -7;
-	canvasMarker.style.left = -7;
+	const canvasMarker = colorCanvas.nextElementSibling as HTMLDivElement;
+	canvasMarker.style.top = "-7";
+	canvasMarker.style.left = "-7";
 
 	let sliderBounds = colorSlider.getBoundingClientRect();
-	const sliderMarker = colorSlider.nextElementSibling;
-	sliderMarker.style.top = -3;
-	sliderMarker.style.left = -7;
+	const sliderMarker = colorSlider.nextElementSibling as HTMLDivElement;
+	sliderMarker.style.top = "-3";
+	sliderMarker.style.left = "-7";
 
 	positionColorPicker();
 	window.addEventListener("resize", () => {
@@ -41,9 +47,9 @@ export function createColorPicker(parent) {
 		sliderBounds = colorSlider.getBoundingClientRect();
 	});
 
-	const rgbInput = Array.from(document.getElementById("input-wrapper").children).filter(
+	const rgbInput = Array.from((document.getElementById("input-wrapper") as HTMLDivElement).children).filter(
 		(elmnt) => elmnt.tagName === "INPUT"
-	);
+	) as HTMLInputElement[];
 	[rgbInput[0], rgbInput[1], rgbInput[2]].forEach((elmnt) => {
 		elmnt.addEventListener("input", () => {
 			applyTextInput("rgb");
@@ -53,15 +59,12 @@ export function createColorPicker(parent) {
 		applyTextInput("hex");
 	});
 
-	let pixel;
+	let pixel: Uint8ClampedArray;
 
 	const rgbStr = parent.style.background;
 	const initialRGB = rgbStr
 		.substring(4, rgbStr.length - 1)
-		.split(", ")
-		.map((str) => {
-			return Number(str);
-		});
+		.split(", ");
 
 	updateColorInput(initialRGB);
 	applyTextInput("rgb");
@@ -69,8 +72,8 @@ export function createColorPicker(parent) {
 	updateSliderMarkerColor();
 
 	colorCanvas.addEventListener("mousedown", (event) => {
-		canvasMarker.style.left = event.clientX - canvasBounds.left - 7;
-		canvasMarker.style.top = event.clientY - canvasBounds.top - 7;
+		canvasMarker.style.left = (event.clientX - canvasBounds.left - 7).toString();
+		canvasMarker.style.top = (event.clientY - canvasBounds.top - 7).toString();
 
 		updateCanvasMarkerColor();
 
@@ -78,7 +81,7 @@ export function createColorPicker(parent) {
 	});
 
 	colorSlider.addEventListener("mousedown", (event) => {
-		sliderMarker.style.left = event.clientX - sliderBounds.left - 7;
+		sliderMarker.style.left = (event.clientX - sliderBounds.left - 7).toString();
 
 		updateSliderMarkerColor();
 
@@ -88,17 +91,17 @@ export function createColorPicker(parent) {
 	makeDraggable(canvasMarker, dragCanvasMarker);
 	makeDraggable(sliderMarker, dragSliderMarker);
 
-	function makeDraggable(elmnt, onDrag) {
+	function makeDraggable(elmnt: HTMLElement, onDrag: Function) {
 		elmnt.onmousedown = dragMouseDown;
 
-		function dragMouseDown(e) {
+		function dragMouseDown(e: MouseEvent) {
 			e = e || window.event;
 			e.preventDefault();
 			document.onmouseup = closeDragElement;
 			document.onmousemove = elementDrag;
 		}
 
-		function elementDrag(e) {
+		function elementDrag(e: MouseEvent) {
 			e = e || window.event;
 			e.preventDefault();
 
@@ -114,7 +117,7 @@ export function createColorPicker(parent) {
 	function updateCanvasMarkerColor() {
 		let x = canvasMarker.offsetLeft + 7;
 		let y = canvasMarker.offsetTop + 7;
-		pixel = CanvasCtx.getImageData(x, y, 1, 1)["data"];
+		pixel = CanvasCtx.getImageData(x, y, 1, 1).data;
 		const rgb = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
 		canvasMarker.style.background = rgb;
 		parent.style.background = rgb;
@@ -137,7 +140,7 @@ export function createColorPicker(parent) {
 		updateCanvasMarkerColor();
 	}
 
-	function dragCanvasMarker(event) {
+	function dragCanvasMarker(event: MouseEvent) {
 		let x = event.clientX - canvasBounds.left;
 		let y = event.clientY - canvasBounds.top;
 
@@ -153,15 +156,15 @@ export function createColorPicker(parent) {
 			y = 256;
 		}
 
-		canvasMarker.style.left = x - 8;
-		canvasMarker.style.top = y - 8;
+		canvasMarker.style.left = (x - 8).toString();
+		canvasMarker.style.top = (y - 8).toString();
 
 		updateCanvasMarkerColor();
 
 		updateColorInput();
 	}
 
-	function dragSliderMarker(event) {
+	function dragSliderMarker(event: MouseEvent) {
 		let x = event.clientX - sliderBounds.left;
 
 		if (x < 0) {
@@ -170,42 +173,43 @@ export function createColorPicker(parent) {
 			x = 359;
 		}
 
-		sliderMarker.style.left = x - 8;
+		sliderMarker.style.left = (x - 8).toString();
 
 		updateSliderMarkerColor();
 
 		updateColorInput();
 	}
 
-	function applyTextInput(type) {
+	function applyTextInput(type: string) {
 		if (type === "rgb") {
-			rgbInput[3].value = rgbToHex(rgbInput[0].value, rgbInput[1].value, rgbInput[2].value);
+			rgbInput[3].value = rgbToHex(Number(rgbInput[0].value), Number(rgbInput[1].value), Number(rgbInput[2].value));
 		} else if (type === "hex") {
+			// Do some other stuff idk
 		}
 
-		const hsv = rgb2hsv(rgbInput[0].value, rgbInput[1].value, rgbInput[2].value);
-		canvasMarker.style.top = 255 - hsv[2] - 8;
-		canvasMarker.style.left = 255 * hsv[1] - 8;
-		sliderMarker.style.left = hsv[0] - 8;
+		const hsv = rgb2hsv(Number(rgbInput[0].value), Number(rgbInput[1].value), Number(rgbInput[2].value));
+		canvasMarker.style.top = (255 - hsv[2] - 8).toString();
+		canvasMarker.style.left = (255 * hsv[1] - 8).toString();
+		sliderMarker.style.left = (hsv[0] - 8).toString();
 
 		updateSliderMarkerColor();
 	}
 
-	function updateColorInput(rgb) {
+	function updateColorInput(rgb?: string[]) {
 		if (rgb !== undefined) {
 			rgbInput[0].value = rgb[0];
 			rgbInput[1].value = rgb[1];
 			rgbInput[2].value = rgb[2];
-			rgbInput[3].value = rgbToHex(rgb[0], rgb[1], rgb[2]);
+			rgbInput[3].value = rgbToHex(Number(rgb[0]), Number(rgb[1]), Number(rgb[2]));
 		} else {
-			rgbInput[0].value = pixel[0];
-			rgbInput[1].value = pixel[1];
-			rgbInput[2].value = pixel[2];
-			rgbInput[3].value = rgbToHex(pixel[0], pixel[1], pixel[2]);
+			rgbInput[0].value = (pixel[0]).toString();
+			rgbInput[1].value = (pixel[1]).toString();
+			rgbInput[2].value = (pixel[2]).toString();
+			rgbInput[3].value = rgbToHex(Number(pixel[0]), Number(pixel[1]), Number(pixel[2]));
 		}
 	}
 
-	function updateCanvas(sliderColor) {
+	function updateCanvas(sliderColor: RGB) {
 		const color = `rgba(${sliderColor.r},${sliderColor.g},${sliderColor.b},1)`;
 		let gradientH = CanvasCtx.createLinearGradient(0, 0, CanvasCtx.canvas.width, 0);
 		gradientH.addColorStop(0, "#fff");
@@ -224,10 +228,10 @@ export function createColorPicker(parent) {
 		const colorBounds = parent.getBoundingClientRect();
 		const colorPickerBounds = colorPickerWrapper.getBoundingClientRect();
 		const formBounds = document.getElementsByClassName("modal-content")[0].getBoundingClientRect();
-		const colorListBounds = document.getElementById("gradient-colors").getBoundingClientRect();
+		const colorListBounds = (document.getElementById("gradient-colors") as HTMLDivElement).getBoundingClientRect();
 
-		colorPickerWrapper.style.top = colorBounds.top + 30 - formBounds.top;
-		colorPickerWrapper.style.left = colorListBounds.width / 2 - colorPickerBounds.width / 2;
+		colorPickerWrapper.style.top = (colorBounds.top + 30 - formBounds.top).toString();
+		colorPickerWrapper.style.left = (colorListBounds.width / 2 - colorPickerBounds.width / 2).toString();
 
 		canvasBounds = colorCanvas.getBoundingClientRect();
 		sliderBounds = colorSlider.getBoundingClientRect();

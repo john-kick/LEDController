@@ -1,4 +1,4 @@
-export function addGradient(json) {
+export function addGradient(json: string) {
 	fetch("/addGradient", {
 		method: "POST",
 		headers: {
@@ -8,7 +8,7 @@ export function addGradient(json) {
 	});
 }
 
-export function removeGradient(name) {
+export function removeGradient(name: string) {
 	fetch("/removeGradient", {
 		method: "POST",
 		headers: {
@@ -24,7 +24,7 @@ export async function getGradients() {
 	return gradientArray;
 }
 
-export function editGradient(json) {
+export function editGradient(json: string) {
 	console.log(json);
 	fetch("/editGradient", {
 		method: "POST",

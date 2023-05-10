@@ -2,16 +2,16 @@
  * Color stuff
  */
 
-export function componentToHex(c) {
+export function componentToHex(c: number) {
 	var hex = c.toString(16).toUpperCase();
 	return hex.length == 1 ? "0" + hex : hex;
 }
 
-export function rgbToHex(r, g, b) {
+export function rgbToHex(r: number, g: number, b: number) {
 	return "#" + componentToHex(Number(r)) + componentToHex(Number(g)) + componentToHex(Number(b));
 }
 
-export function rgb2hsv(r, g, b) {
+export function rgb2hsv(r: number, g: number, b: number) {
 	const v = Math.max(r, g, b);
 	const c = v - Math.min(r, g, b);
 	const h = c && (v == r ? (g - b) / c : v == g ? 2 + (b - r) / c : 4 + (r - g) / c);
