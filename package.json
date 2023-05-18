@@ -17,6 +17,7 @@
 		"react": "^18.2.0",
 		"react-color": "^2.19.3",
 		"simple-color-picker": "^1.0.5",
+		"simplex-noise": "^4.0.1",
 		"ts-node": "^10.9.1",
 		"vm2": "^3.9.17",
 		"ws": "^8.13.0"
@@ -42,6 +43,6 @@
 		"webpack-dev-server": "^4.13.3"
 	},
 	"scripts": {
-		"build": "webpack; tsc"
+		"build": "webpack"
 	}
 }

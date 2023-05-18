@@ -1,3 +1,5 @@
+import { RGB } from "./util";
+
 export default class Pixel {
     r!: number;
     g!: number;
@@ -9,10 +11,10 @@ export default class Pixel {
         this.setB(b);
     }
 
-    public setColor(r: number, g: number, b: number): this {
-        this.setR(r);
-        this.setG(g);
-        this.setB(b);
+    public setColor(color: RGB): this {
+        this.setR(color.r);
+        this.setG(color.g);
+        this.setB(color.b);
         return this;
     }
 

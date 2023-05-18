@@ -5,16 +5,16 @@ import { delay } from "../util.js";
 let running = false;
 
 parentPort.on("message", async (message) => {
-	const { animationName, args } = message;
+	const { animationName } = message;
 
 	const Animation = require(`../animations/${animationName}`).default;
 	const animation = new Animation();
 
 	running = true;
 	while (running) {
-		animation.step(args);
+		animation.step();
 		send(animation.strip.toUint8Array());
-		await delay(1000 / 60);
+		await delay(1000 / 144);
 	}
 });
 

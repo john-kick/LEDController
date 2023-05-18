@@ -1,4 +1,5 @@
 import Pixel from "./Pixel";
+import { RGB } from "./util";
 
 export default class Strip {
     pixels: Pixel[];
@@ -35,18 +36,18 @@ export default class Strip {
         this.pixels[i] = pixel;
     }
 
-    public setPixelColor(i: number, r: number, g: number, b: number) {
-        this.pixels[i].setColor(r, g, b);
+    public setPixelColor(i: number, color: RGB) {
+        this.pixels[i].setColor(color);
     }
 
-    public fill(r: number, g: number, b: number) {
+    public fill(color: RGB) {
         this.pixels.forEach((pixel) => {
-            pixel.setColor(r, g, b);
+            pixel.setColor(color);
         });
     }
 
     public clear() {
-        this.fill(0, 0, 0);
+        this.fill({ r: 0, g: 0, b: 0 });
     }
 
     public setBrightness(x: number) {

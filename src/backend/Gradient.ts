@@ -1,4 +1,5 @@
-import { RGB } from "./util";
+import { RGB, getPosition } from "./util";
+import { getGradient } from "./gradientManager";
 
 interface ColorStep {
     position: number,
@@ -8,27 +9,57 @@ interface ColorStep {
 export default class Gradient {
     colors: ColorStep[] = [];
 
-    constructor(col1: RGB, col2: RGB) {
-        this.colors = [
-            {
-                position: 1,
-                color: col1
-            },
-            {
-                position: 100,
-                color: col2
-            }
-        ]
+    constructor(name?: string) {
+        if (!name) {
+            this.colors = [
+                {
+                    position: 0,
+                    color: {
+                        r: 255,
+                        g: 0,
+                        b: 255
+                    }
+                },
+                {
+                    position: 50,
+                    color: {
+                        r: 0,
+                        g: 0,
+                        b: 255
+                    }
+                },
+                {
+                    position: 100,
+                    color: {
+                        r: 0,
+                        g: 0,
+                        b: 255
+                    }
+                }
+            ];
+        } else {
+            this.init(name);
+        }
     }
 
-    public addColor(pos: number, r: number, g: number, b: number) {
-        if (pos < 1 || pos > 100) throw new Error("pos needs to be between 1 and 100. Actual: " + pos);
-        this.colors.forEach((step) => {
-            if (step.position === pos) throw new Error("There is already a color defined for position " + pos);
-        })
+    private async init(name: string) {
+        const gradString = await getGradient(name);
 
-        this.colors.push({ position: pos, color: { r, g, b } });
-        this.colors.sort((a, b) => a.position - b.position);
+        if (!gradString) {
+            throw new Error("No such gradient.");
+        }
+
+        const data = gradString.substring(gradString.indexOf('[') + 2, getPosition(gradString, ']', 2) - 2).split("},{");
+        const colors = data.map((color) => {
+            return color.substring(color.indexOf('(') + 1, color.indexOf(')')).split(",");
+        });
+        const positions = data.map((color) => {
+            return color.substring(color.indexOf('position') + 11, color.length - 1);
+        });
+
+        for (let i = 0; i < colors.length; i++) {
+            this.addColor(Number(colors[i][0]), Number(colors[i][1]), Number(colors[i][2]), Number(positions[i]));
+        }
     }
 
     public toString() {
@@ -39,6 +70,17 @@ export default class Gradient {
             str += "],";
         });
         return str + "}";
+    }
+
+    public addColor(rP: number, gP: number, bP: number, pos: number) {
+        this.colors.push({
+            position: pos,
+            color: {
+                r: rP,
+                g: gP,
+                b: bP
+            }
+        });
     }
 
     public getColorAtPos(pos: number) {
@@ -54,6 +96,10 @@ export default class Gradient {
         const prev = this.colors[i - 1];
         const relPos = (pos - prev.position) / (curr.position - prev.position);
         return this.lerp(curr.color, prev.color, relPos);
+    }
+
+    public static getDefaultGradient() {
+        const grad = new Gradient();
     }
 
     private lerp(col1: RGB, col2: RGB, i: number): RGB {

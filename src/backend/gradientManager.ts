@@ -53,7 +53,6 @@ export function removeGradient(name: string) {
 }
 
 export function editGradient(obj: string) {
-	console.log(obj);
 	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
@@ -75,20 +74,23 @@ export function editGradient(obj: string) {
 	});
 }
 
-export function applyGradient(gradientName: { name: string }) {
-	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
-		if (err) {
-			console.error(err);
-			return;
-		}
-
-		const gradArr = gradientsToArray(data);
-		gradArr.forEach((gradient) => {
-			if (gradient.substring(gradient.indexOf('"') + 1, getPosition(gradient, '"', 2)) === gradientName.name) {
+export function getGradient(name: string): Promise<string | undefined> {
+	return new Promise((resolve, reject) => {
+		fs.readFile(gradientJsonPath, 'utf8', (err, data) => {
+			if (err) {
+				console.error(err);
+				reject(err);
 				return;
 			}
-		});
 
+			const gradArr = gradientsToArray(data);
+			gradArr.forEach((gradient) => {
+				if (gradient.substring(gradient.indexOf('"') + 1, getPosition(gradient, '"', 2)) === name) {
+					resolve(gradient);
+				}
+			});
+			resolve("");
+		});
 	});
 }
 

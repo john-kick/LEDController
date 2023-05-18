@@ -3,6 +3,8 @@ import Strip from "../Strip";
 export default class BaseAnimation {
     strip: Strip;
     isAnimated: boolean = false;
+    isRefreshable: boolean = false;
+    usesGradient: boolean = false;
 
     public constructor() {
         this.strip = new Strip(288);

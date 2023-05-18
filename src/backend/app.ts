@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import fs from "fs";
 
-import { addGradient, editGradient, removeGradient, applyGradient } from "./gradientManager";
+import { addGradient, editGradient, removeGradient } from "./gradientManager";
 import { handleCommand } from "./CommandHandler.js";
 import { Animator } from "./Animator.js";
 
@@ -12,6 +12,14 @@ const baseDirName = path.resolve(path.dirname(""));
 const app = express();
 
 const animator: Animator = new Animator();
+
+const gradPath = path.join(baseDirName, "/src/backend", "gradients.json");
+if (!fs.existsSync(gradPath)) {
+	const content = "{}";
+
+	fs.writeFileSync(gradPath, content);
+	console.log(`File "${gradPath} was created.`);
+}
 
 app.use(
 	cors({
@@ -25,8 +33,8 @@ app.get("/", (_req: Request, res: Response) => {
 	res.sendFile(path.join(baseDirName, "/src/frontend", "index.html"));
 });
 
-app.get("/libs/bootstrap-5.2.2-dist/css/bootstrap.css", (_req: Request, res: Response) => {
-	res.sendFile(path.join(baseDirName, "libs/bootstrap-5.2.2-dist/css/bootstrap.css"));
+app.get("/libs/bootstrap-3.4.1-dist/css/bootstrap.css", (_req: Request, res: Response) => {
+	res.sendFile(path.join(baseDirName, "libs/bootstrap-3.4.1-dist/css/bootstrap.css"));
 });
 
 app.get("/main.css", (_req: Request, res: Response) => {
@@ -54,11 +62,11 @@ app.post("/editGradient", (req: Request) => {
 });
 
 app.post("/applyGradient", (req: Request) => {
-	applyGradient(req.body);
+	animator.switchGradient(req.body.name);
 });
 
 app.get("/getGradients", (_req: Request, res: Response) => {
-	fs.readFile(path.join(baseDirName, "/src/backend", "gradients.json"), "utf8", (err, data) => {
+	fs.readFile(gradPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
 			return;
