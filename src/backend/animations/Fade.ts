@@ -3,7 +3,6 @@ import { RGB, hueToRgb } from "../util";
 
 export default class Fade extends BaseAnimation {
     isAnimated: boolean = true;
-    isRefreshable: boolean = true;
     private hue: number = 0;
     private color: RGB = { r: 0, g: 0, b: 0 };
     private stepSize = 1;

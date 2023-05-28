@@ -18,7 +18,7 @@ if (!fs.existsSync(gradPath)) {
 	const content = "{}";
 
 	fs.writeFileSync(gradPath, content);
-	console.log(`File "${gradPath} was created.`);
+	console.log(`File "${gradPath}" was created.`);
 }
 
 app.use(
@@ -45,34 +45,53 @@ app.get("/dist/bundle.js", (_req: Request, res: Response) => {
 	res.sendFile(path.join(baseDirName, "dist/bundle.js"));
 });
 
-app.post("/command", (req: Request) => {
+app.post("/command", (req: Request, res: Response) => {
 	handleCommand(req.body.command, animator);
+	res.sendStatus(200); // Send a success status code as a response
 });
 
-app.post("/addGradient", (req: Request<{}, {}, string>) => {
+app.post("/brightness", (req: Request, res: Response) => {
+	animator.setBrightness(req.body.brightness);
+	res.sendStatus(200); // Send a success status code as a response
+});
+
+app.post("/addGradient", (req: Request<{}, {}, string>, res: Response) => {
 	addGradient(req.body);
+	res.sendStatus(200); // Send a success status code as a response
 });
 
-app.post("/removeGradient", (req: Request) => {
+app.post("/removeGradient", (req: Request, res: Response) => {
 	removeGradient(req.body.gradient);
+	res.sendStatus(200); // Send a success status code as a response
 });
 
-app.post("/editGradient", (req: Request) => {
+app.post("/editGradient", (req: Request, res: Response) => {
 	editGradient(req.body);
+	res.sendStatus(200); // Send a success status code as a response
 });
 
-app.post("/applyGradient", (req: Request) => {
+app.post("/applyGradient", (req: Request, res: Response) => {
 	animator.switchGradient(req.body.name);
+	res.sendStatus(200); // Send a success status code as a response
 });
 
 app.get("/getGradients", (_req: Request, res: Response) => {
 	fs.readFile(gradPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
+			res.sendStatus(500); // Send a server error status code as a response
 			return;
 		}
 		res.send(data);
 	});
+});
+
+app.post("/manualInput", (req: Request, res: Response) => {
+	const segments = req.body.value.split(" ");
+	if (segments[0] === "animation") {
+		handleCommand(req.body.value, animator);
+	}
+	res.sendStatus(200);
 });
 
 app.listen(PORT, () => {

@@ -1,5 +1,5 @@
 import fs from "fs";
-import { send } from "./connector.js";
+// import { send } from "./connector.js";
 import { getPosition } from "./util.js";
 import express, { Request, Response } from "express";
 import path from "path";
@@ -75,8 +75,11 @@ export function editGradient(obj: string) {
 }
 
 export function getGradient(name: string): Promise<string | undefined> {
+	console.log("test 1");
 	return new Promise((resolve, reject) => {
+		console.log("test 2");
 		fs.readFile(gradientJsonPath, 'utf8', (err, data) => {
+			console.log(err, data);
 			if (err) {
 				console.error(err);
 				reject(err);

@@ -25,7 +25,6 @@ export async function getGradients() {
 }
 
 export function editGradient(json: string) {
-	console.log(json);
 	fetch("/editGradient", {
 		method: "POST",
 		headers: {

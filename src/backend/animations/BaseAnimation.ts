@@ -3,7 +3,6 @@ import Strip from "../Strip";
 export default class BaseAnimation {
     strip: Strip;
     isAnimated: boolean = false;
-    isRefreshable: boolean = false;
     usesGradient: boolean = false;
 
     public constructor() {
@@ -14,8 +13,9 @@ export default class BaseAnimation {
         this.strip.clear();
     }
 
-    public refresh(_params?: any[]): void {
-        // noop
+    public refresh(params?: any[]): void {
+        // Animation has no refresh function. Initialize again instead
+        this.initialize(params);
     }
 
     public step(_params?: any[]): void {

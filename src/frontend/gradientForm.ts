@@ -57,7 +57,7 @@ header.onclick = () => {
 };
 
 const removeColorDummy = document.createElement("button");
-removeColorDummy.setAttribute("class", "lead remove-color btn-dark form-button");
+removeColorDummy.setAttribute("class", "remove-color secondary-button");
 removeColorDummy.setAttribute("type", "button");
 removeColorDummy.textContent = "X";
 
@@ -65,7 +65,7 @@ const colorDummy = document.createElement("div");
 colorDummy.setAttribute("class", "gradient-color");
 
 const inputDummy = document.createElement("input");
-inputDummy.setAttribute("class", "color-location");
+inputDummy.setAttribute("class", "color-location text-input");
 
 const form = document.getElementById("gradient-form") as HTMLFormElement;
 const gradientColorContainer = document.getElementById("gradient-colors") as HTMLDivElement;

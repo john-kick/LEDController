@@ -1,4 +1,5 @@
 import { getGradients, removeGradient } from "./gradientOperations";
+import { post } from "./util";
 
 interface gradColor {
 	color: string,
@@ -6,31 +7,32 @@ interface gradColor {
 }
 
 const buttons = [
-	{ name: "empty", command: "empty" },
-	{ name: "red", command: "fill 255 0 0" },
-	{ name: "green", command: "fill 0 255 0" },
-	{ name: "blue", command: "fill 0 0 255" },
-	{ name: "fade", command: "fade 0.5" },
+	{ name: "Empty", command: "empty" },
+	{ name: "Fill red", command: "fill 255 0 0" },
+	{ name: "Fill green", command: "fill 0 255 0" },
+	{ name: "Fill blue", command: "fill 0 0 255" },
+	{ name: "Fade", command: "fade 0.5" },
 	{ name: "rainbow", command: "rainbow 0.5" },
-	{ name: "vapor", command: "vapor" },
-	{ name: "test", command: "fade" },
+	{ name: "Vapor", command: "vapor" },
+	{ name: "Test", command: "fade" },
+	{ name: "Show gradient", command: "showGradient" }
 ];
 
 const manualInputSubmit = document.getElementById("manualInputSubmit") as HTMLButtonElement;
 manualInputSubmit.addEventListener("click", () => {
 	const input = (document.getElementById("manualInput") as HTMLInputElement).value;
-	send(input);
+	post({ value: input }, "manualInput");
 });
 
-const buttonContainer = document.getElementById("button-container") as HTMLDivElement;
+const buttonContainer = document.getElementById("animation-buttons") as HTMLDivElement;
 
 buttons.forEach((button) => {
 	const buttonElem = document.createElement("button");
 
-	buttonElem.setAttribute("class", "btn btn-lg btn-cmd");
+	buttonElem.setAttribute("class", "primary-button");
 
 	buttonElem.addEventListener("click", async () => {
-		send("animation " + button.command);
+		post({ command: "animation " + button.command }, "command");
 	});
 
 	buttonElem.textContent = button.name;
@@ -38,16 +40,26 @@ buttons.forEach((button) => {
 	buttonContainer.appendChild(buttonElem);
 });
 
-const sliders = document.getElementsByClassName("slider") as HTMLCollectionOf<HTMLInputElement>;
-for (let slider of sliders) {
-	const name = slider.getAttribute("id") ?? "";
-	slider.value = localStorage.getItem(name) ?? "50";
-	slider.addEventListener("input", async () => {
-		localStorage.setItem(name, slider.value);
-		const cmd = name + " " + slider.value;
-		send(cmd);
-	});
-}
+const brightnessSlider = document.getElementById("brightness") as HTMLInputElement;
+const brightnessInput = document.getElementById("brightness-text") as HTMLInputElement;
+brightnessSlider.addEventListener("input", () => {
+	brightnessInput.value = brightnessSlider.value;
+});
+
+brightnessSlider.addEventListener("input", () => {
+	post({ brightness: Math.floor(Number(brightnessSlider.value)) }, "brightness");
+});
+
+brightnessInput.addEventListener("input", () => {
+	const pattern: RegExp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+	if (!pattern.test(brightnessInput.value)) {
+		brightnessInput.style.color = "red";
+		return;
+	}
+	brightnessInput.style.color = "";
+	brightnessSlider.value = brightnessInput.value;
+	post({ brightness: brightnessInput.value }, "brightness");
+});
 
 getGradients().then((gradients) => {
 	displayGradients(gradients);
@@ -64,18 +76,6 @@ applyButton.addEventListener("click", () => {
 		body: JSON.stringify({ name: selected.getAttribute("name") ?? "" }),
 	});
 });
-
-function send(cmd: string) {
-	fetch("/command", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			command: cmd,
-		}),
-	});
-}
 
 function displayGradients(gradients: String[]) {
 	const gradientContainer = document.getElementById("gradients-container") as HTMLDivElement;
@@ -140,9 +140,6 @@ function displayGradients(gradients: String[]) {
 			header.appendChild(remove);
 			header.appendChild(title);
 			gradientContainer.appendChild(wrapper);
-
-			header.style.top = (header.getBoundingClientRect().top + 5).toString();
-			header.style.left = (header.getBoundingClientRect().left + 5).toString();
 		}
 	}
 }

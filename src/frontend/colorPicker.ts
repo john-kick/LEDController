@@ -1,4 +1,4 @@
-import { rgbToHex, rgb2hsv } from "./util";
+import { rgbToHex, rgbToHsv } from "./util";
 
 interface RGB {
 	r: number,
@@ -187,7 +187,7 @@ export function createColorPicker(parent: HTMLElement) {
 			// Do some other stuff idk
 		}
 
-		const hsv = rgb2hsv(Number(rgbInput[0].value), Number(rgbInput[1].value), Number(rgbInput[2].value));
+		const hsv = rgbToHsv(Number(rgbInput[0].value), Number(rgbInput[1].value), Number(rgbInput[2].value));
 		canvasMarker.style.top = (255 - hsv[2] - 8).toString();
 		canvasMarker.style.left = (255 * hsv[1] - 8).toString();
 		sliderMarker.style.left = (hsv[0] - 8).toString();

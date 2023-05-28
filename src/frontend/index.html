@@ -1,7 +1,7 @@
 <html lang="en">
 	<head>
 		<title>My LED Controller</title>
-		<link rel="stylesheet" type="text/css" href="../../libs/bootstrap-3.4.1-dist/css/bootstrap.css" />
+		<!-- <link rel="stylesheet" type="text/css" href="../../libs/bootstrap-3.4.1-dist/css/bootstrap.css" /> -->
 		<link rel="stylesheet" type="text/css" href="main.css" />
 
 		<!-- to get rid of "GET .../favicon.ico" error-->
@@ -13,45 +13,51 @@
 			<h1 id="title">My LED Controller</h1>
 		</div>
 		<div class="content">
-			<div id="button-container"></div>
-			<br />
+			<div id="color-picker">
+				<div id="color-preview"></div>
+				<div id="color-saturation-brightness">
+					<canvas id="sb-canvas" width="255" height="255"></canvas>
+					<div id="sb-marker"></div>
+				</div>
+				<div id="hue-slider-container">
+					<input id="hue-slider" type="range" min="0" max="360" value="0" step="1" />
+				</div>
+			</div>
+			<input id="red-input" type="number" min="0" max="255" step="1" value="0" />
+			<input id="green-input" type="number" min="0" max="255" step="1" value="0" />
+			<input id="blue-input" type="number" min="0" max="255" step="1" value="0" />
+			<input id="hex-input" type="text" value="ff0000" />
 
 			<div>
-				<input id="manualInput" type="text" />
-				<button id="manualInputSubmit">Submit</button>
+				<input id="manualInput" class="text-input" type="text" />
+				<button id="manualInputSubmit" class="secondary-button">Submit</button>
 			</div>
 			<br />
-			<div id="slider-container">
-				<div>
-					<span class="description">Brightness</span>
-					<br />
-					<input type="range" min="1" max="100" class="slider" id="brightness" />
-				</div>
-				<div>
-					<span class="description">Speed</span>
-					<br />
-					<input type="range" min="1" max="100" class="slider" id="speed" />
-				</div>
+			<div id="animation-buttons" class="primary-button-container"></div>
+			<br />
+			<div id="brightness-container" class="slider-container">
+				<span class="description">Brightness</span>
+				<input id="brightness" type="range" min="0" max="255" value="255" class="slider" />
+				<input id="brightness-text" class="text-input" type="text" value="255" readonly />
 			</div>
 			<br />
-
 			<div id="gradients-container"></div>
-			<button id="add-gradient" class="btn btn-lg btn-secondary form-button">Add gradient</button>
-			<button id="edit-gradient" class="btn btn-lg btn-secondary form-button disabled">Edit gradient</button>
-			<button id="apply-gradient" class="btn btn-lg btn-secondary form-button disabled">Apply gradient</button>
+			<div class="primary-button-container">
+				<button id="add-gradient" class="primary-button">Add gradient</button>
+				<button id="edit-gradient" class="primary-button disabled">Edit gradient</button>
+				<button id="apply-gradient" class="primary-button disabled">Apply gradient</button>
+			</div>
 
-			<div id="gradient-modal" class="modal">
+			<div id="gradient-modal" class="modal" style="display: none">
 				<div class="modal-content">
 					<h5 class="close">&times; Create gradient</h5>
 					<form id="gradient-form">
 						<div id="gradient-preview" class="test-gradient"></div>
 						<div id="gradient-colors"></div>
-						<div id="add-gradient-color">
-							<span class="lead form-button">Add color</span>
-						</div>
+						<button id="add-gradient-color" class="primary-button" type="button">Add color</button>
 						<br />
-						<input class="btn btn-secondary" type="submit" value="Submit" />
-						<input id="gradient-name-input" value="Name" />
+						<button class="primary-button" type="submit">Submit</button>
+						<input id="gradient-name-input" class="text-input" value="Name" />
 					</form>
 				</div>
 			</div>

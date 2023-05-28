@@ -4,7 +4,8 @@ import BaseAnimation from "./BaseAnimation";
 export default class Rainbow extends BaseAnimation {
     private startHue = 0;
     isAnimated: boolean = true;
-    isRefreshable: boolean = true;
+
+    testTime = 0;
 
     stepSize: number = 1;
 
