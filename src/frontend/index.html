@@ -13,21 +13,6 @@
 			<h1 id="title">My LED Controller</h1>
 		</div>
 		<div class="content">
-			<div id="color-picker">
-				<div id="color-preview"></div>
-				<div id="color-saturation-brightness">
-					<canvas id="sb-canvas" width="255" height="255"></canvas>
-					<div id="sb-marker"></div>
-				</div>
-				<div id="hue-slider-container">
-					<input id="hue-slider" type="range" min="0" max="360" value="0" step="1" />
-				</div>
-			</div>
-			<input id="red-input" type="number" min="0" max="255" step="1" value="0" />
-			<input id="green-input" type="number" min="0" max="255" step="1" value="0" />
-			<input id="blue-input" type="number" min="0" max="255" step="1" value="0" />
-			<input id="hex-input" type="text" value="ff0000" />
-
 			<div>
 				<input id="manualInput" class="text-input" type="text" />
 				<button id="manualInputSubmit" class="secondary-button">Submit</button>
@@ -47,7 +32,6 @@
 				<button id="edit-gradient" class="primary-button disabled">Edit gradient</button>
 				<button id="apply-gradient" class="primary-button disabled">Apply gradient</button>
 			</div>
-
 			<div id="gradient-modal" class="modal" style="display: none">
 				<div class="modal-content">
 					<h5 class="close">&times; Create gradient</h5>
@@ -61,6 +45,20 @@
 					</form>
 				</div>
 			</div>
+			<div id="color-picker" style="visibility: hidden">
+				<div id="color-saturation-brightness">
+					<canvas id="sb-canvas" width="255" height="255"></canvas>
+					<div id="sb-marker"></div>
+				</div>
+				<div id="hue-slider-container">
+					<input id="hue-slider" type="range" min="0" max="360" value="0" step="1" />
+				</div>
+				<input id="red-input" type="number" min="0" max="255" step="1" value="0" />
+				<input id="green-input" type="number" min="0" max="255" step="1" value="0" />
+				<input id="blue-input" type="number" min="0" max="255" step="1" value="0" />
+				<input id="hex-input" type="text" value="ff0000" />
+			</div>
+			<div id="placeholder-color"></div>
 		</div>
 		<script type="text/javascript" src="../../dist/bundle.js"></script>
 	</body>

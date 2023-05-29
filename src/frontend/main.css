@@ -177,7 +177,7 @@ body {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 9999;
+	z-index: 1;
 	background-color: var(--button-color);
 	border-radius: 8px;
 	padding: 20px;
@@ -265,6 +265,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: fit-content;
+	position: absolute;
+	z-index: 2;
 }
 
 #color-saturation-brightness {

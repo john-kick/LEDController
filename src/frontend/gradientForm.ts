@@ -1,11 +1,15 @@
 import { createColorPicker } from "./colorPicker";
 import { addGradient, getGradients, editGradient } from "./gradientOperations";
+import { setParent } from "./newColorPicker";
 
 const modal = document.getElementById("gradient-modal") as HTMLDivElement;
 const modalContent = document.getElementsByClassName("modal-content")[0] as HTMLDivElement;
 const addGradientButton = document.getElementById("add-gradient") as HTMLButtonElement;
 const editGradientButton = document.getElementById("edit-gradient") as HTMLButtonElement;
 const header = document.getElementsByClassName("close")[0] as HTMLButtonElement;
+
+const colorPicker = document.getElementById("color-picker") as HTMLDivElement;
+
 let mode = "add";
 let oldName = "";
 
@@ -99,6 +103,7 @@ function addGradientColor(r?: number, g?: number, b?: number, p?: number) {
 	});
 
 	colorClone.addEventListener("change", () => {
+		console.log("change");
 		refreshGradientPreview();
 	});
 
@@ -137,33 +142,42 @@ function removeGradientColor(button: HTMLButtonElement) {
 
 function createColorPickerOnColor(color: HTMLDivElement) {
 	if (prevClickedColor === placeholderColor) {
-		appendColorPicker(color);
+		openColorPicker(color);
 		prevClickedColor = color;
 	} else {
 		closeColorPicker();
 		if (color === prevClickedColor) {
 			prevClickedColor = placeholderColor;
 		} else {
-			appendColorPicker(color);
+			openColorPicker(color);
 			prevClickedColor = color
 		}
 	}
 }
 
-function appendColorPicker(color: HTMLDivElement) {
-	createColorPicker(color);
-	prevClickedColor = color;
+function openColorPicker(element: HTMLDivElement) {
+	colorPicker.style.visibility = "";
+
+	const colorBox = element.getBoundingClientRect();
+
+	colorPicker.style.left = `${colorBox.right - colorBox.left}px`;
+	colorPicker.style.top = `${colorBox.bottom}px`
+
+	setParent(element);
+
+	// createColorPicker(color);
+	prevClickedColor = element;
 }
 
 function closeColorPicker() {
-	(document.getElementById("color-picker-wrapper") as HTMLDivElement).remove();
+	colorPicker.style.visibility = "hidden";
 }
 
 function resize() {
 	modalContent.style.left = (window.innerWidth / 2 - modalContent.getBoundingClientRect().width / 2).toString();
 }
 
-function refreshGradientPreview() {
+export function refreshGradientPreview() {
 	const gradientPreview = document.getElementById("gradient-preview") as HTMLDivElement;
 	const colorElements = document.getElementsByClassName("gradient-color") as HTMLCollectionOf<HTMLDivElement>;
 	const colorLocations = document.getElementsByClassName("color-location") as HTMLCollectionOf<HTMLInputElement>;
