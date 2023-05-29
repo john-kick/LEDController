@@ -14,9 +14,7 @@ export default class Fade extends BaseAnimation {
     }
 
     public refresh(params: any[]): void {
-        if (params.length > 1) {
-            this.stepSize = Number(params[0]);
-        }
+        this.stepSize = Number(params[0]);
     }
 
     public step(): void {

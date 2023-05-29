@@ -161,7 +161,7 @@ function openColorPicker(element: HTMLDivElement) {
 	const colorBox = element.getBoundingClientRect();
 
 	colorPicker.style.left = `${colorBox.right - colorBox.left}px`;
-	colorPicker.style.top = `${colorBox.bottom}px`
+	colorPicker.style.top = `${colorBox.bottom}px`;
 
 	setParent(element);
 

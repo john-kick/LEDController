@@ -79,6 +79,10 @@ export class Animator {
     public async switchGradient(name: string) {
         this.currentGradient = new Gradient();
         await this.currentGradient.get(name);
+        const binds = { params: [this.currentGradient.getColors()] }
+        if (this.worker) {
+            this.worker.postMessage(binds);
+        }
     }
 
     public setBrightness(brightness: number) {
@@ -87,5 +91,4 @@ export class Animator {
             this.worker.postMessage({ brightness: brightness });
         }
     }
-
 }

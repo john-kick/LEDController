@@ -19,6 +19,9 @@ export default class Strip {
         // Apply brightness
         const bPixels = this.adaptBrightness();
 
+        // Flip to match actual orientation
+        bPixels.reverse();
+
         const arr = new Uint8Array(this.length * 3);
         for (let i = 0; i < this.length; i++) {
             arr[i * 3] = bPixels[i].r;

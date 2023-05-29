@@ -1,6 +1,7 @@
 :root {
 	--button-color: #161625;
 	--button-hover-color: #203146;
+	--button-selected-color: #a0a0a0;
 	--text-color: #ffffff;
 	--input-background: #212121;
 	--canvas-background: #003d75;
@@ -30,6 +31,10 @@ body {
 .primary-button:hover {
 	background-color: var(--button-hover-color);
 	cursor: pointer;
+}
+
+.primary-button.selected {
+	background-color: var(--button-selected-color);
 }
 
 .secondary-button {
@@ -63,6 +68,39 @@ body {
 
 #brightness-text {
 	width: 50px;
+}
+
+.param {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100px;
+}
+
+label {
+	color: var(--text-color);
+	margin-top: 10px;
+	text-align: center;
+}
+
+.param input[type="range"] {
+	width: 20px;
+	height: 255px;
+	margin-top: 10px;
+}
+
+.param .text-input {
+	width: 50px;
+}
+
+#params-container {
+	display: flex;
+	flex-direction: wrap;
+	gap: 20px;
+}
+
+#submit {
+	margin-top: 20px;
 }
 
 .canvas {

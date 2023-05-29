@@ -4,7 +4,6 @@ import path from "path";
 import fs from "fs";
 
 import { addGradient, editGradient, removeGradient } from "./gradientManager";
-import { handleCommand } from "./CommandHandler.js";
 import { Animator } from "./Animator.js";
 
 const PORT = 8888;
@@ -46,7 +45,8 @@ app.get("/dist/bundle.js", (_req: Request, res: Response) => {
 });
 
 app.post("/command", (req: Request, res: Response) => {
-	handleCommand(req.body.command, animator);
+	console.log(req.body.params);
+	animator.switchAnimation(req.body.name, req.body.params);
 	res.sendStatus(200); // Send a success status code as a response
 });
 
@@ -89,7 +89,7 @@ app.get("/getGradients", (_req: Request, res: Response) => {
 app.post("/manualInput", (req: Request, res: Response) => {
 	const segments = req.body.value.split(" ");
 	if (segments[0] === "animation") {
-		handleCommand(req.body.value, animator);
+		// handleCommand(req.body.value, animator);
 	}
 	res.sendStatus(200);
 });

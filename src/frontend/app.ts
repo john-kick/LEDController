@@ -1,3 +1,4 @@
+import AnimationButton, { AnimationParameter } from "./AnimationButton";
 import { getGradients, removeGradient } from "./gradientOperations";
 import { post } from "./util";
 
@@ -6,16 +7,56 @@ interface gradColor {
 	position: string
 }
 
-const buttons = [
-	{ name: "Empty", command: "empty" },
-	{ name: "Fill red", command: "fill 255 0 0" },
-	{ name: "Fill green", command: "fill 0 255 0" },
-	{ name: "Fill blue", command: "fill 0 0 255" },
-	{ name: "Fade", command: "fade 0.5" },
-	{ name: "rainbow", command: "rainbow 0.5" },
-	{ name: "Vapor", command: "vapor" },
-	{ name: "Test", command: "fade" },
-	{ name: "Show gradient", command: "showGradient" }
+interface button {
+	name: string,
+	command: string,
+	params: AnimationParameter[]
+}
+
+const buttons: button[] = [
+	{
+		name: "Empty",
+		command: "empty",
+		params: []
+	},
+	{
+		name: "Fill",
+		command: "fill",
+		params: [
+			{ name: "Red", type: ["range", "0", "255", "1"] },
+			{ name: "Green", type: ["range", "0", "255", "1"] },
+			{ name: "Blue", type: ["range", "0", "255", "1"] }
+		]
+	},
+	{
+		name: "Fade",
+		command: "fade",
+		params: [
+			{ name: "Speed", type: ["range", "0", "10", "0.1"] }
+		]
+	},
+	{
+		name: "Rainbow",
+		command: "rainbow",
+		params: [
+			{ name: "Speed", type: ["range", "0", "10", "0.1"] }
+		]
+	},
+	{
+		name: "Show gradient",
+		command: "showGradient",
+		params: []
+	},
+	{
+		name: "Noise",
+		command: "noise",
+		params: []
+	},
+	{
+		name: "Test",
+		command: "test",
+		params: []
+	}
 ];
 
 const manualInputSubmit = document.getElementById("manualInputSubmit") as HTMLButtonElement;
@@ -25,28 +66,58 @@ manualInputSubmit.addEventListener("click", () => {
 });
 
 const buttonContainer = document.getElementById("animation-buttons") as HTMLDivElement;
+const paramsFormContainer = document.getElementById("params-form-container") as HTMLDivElement;
+const paramsForm = document.getElementById("params-form") as HTMLFormElement;
+const paramsContainer = document.getElementById("params-container") as HTMLDivElement;
 
 buttons.forEach((button) => {
-	const buttonElem = document.createElement("button");
-
-	buttonElem.setAttribute("class", "primary-button");
-
+	const buttonElem = new AnimationButton(button.name, button.command, button.params);
 	buttonElem.addEventListener("click", async () => {
-		post({ command: "animation " + button.command }, "command");
-	});
+		if (buttonElem.classList.contains("selected")) {
+			buttonElem.classList.remove("selected");
+			paramsFormContainer.style.visibility = "hidden";
+		} else {
+			const prevSelected = buttonContainer.getElementsByClassName("selected")[0];
+			if (prevSelected) prevSelected.classList.remove("selected");
+			buttonElem.classList.add("selected");
+			paramsFormContainer.style.visibility = "";
+		}
 
-	buttonElem.textContent = button.name;
+		// Remove any existing param elements in form
+		const prevParams = document.getElementsByClassName("param");
+		const length = prevParams.length;
+		for (let i = 0; i < length; i++) {
+			paramsContainer.removeChild(prevParams[0]);
+		}
+
+		const params = buttonElem.getParamsHTML();
+
+		params.forEach((param) => {
+			paramsContainer.appendChild(param);
+		});
+	});
 
 	buttonContainer.appendChild(buttonElem);
 });
 
-const brightnessSlider = document.getElementById("brightness") as HTMLInputElement;
-const brightnessInput = document.getElementById("brightness-text") as HTMLInputElement;
-brightnessSlider.addEventListener("input", () => {
-	brightnessInput.value = brightnessSlider.value;
+paramsForm.addEventListener('submit', (event) => {
+	event.preventDefault();
+
+	const getValues = paramsForm.getElementsByClassName("get-value") as HTMLCollectionOf<HTMLInputElement>;
+	const toSend: string[] = [];
+	for (let i = 0; i < getValues.length; i++) {
+		toSend.push(getValues[i].value);
+	}
+
+	const selected = buttonContainer.getElementsByClassName("selected")[0] as AnimationButton;
+	post({ name: selected.getCommand(), params: toSend }, "command");
 });
 
+const brightnessSlider = document.getElementById("brightness") as HTMLInputElement;
+const brightnessInput = document.getElementById("brightness-text") as HTMLInputElement;
+
 brightnessSlider.addEventListener("input", () => {
+	brightnessInput.value = brightnessSlider.value;
 	post({ brightness: Math.floor(Number(brightnessSlider.value)) }, "brightness");
 });
 

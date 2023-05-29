@@ -9,6 +9,7 @@ const socket = dgram.createSocket("udp4");
 
 parentPort.on("message", async (binds) => {
 	const { init, animationName, params, brightness } = binds;
+	console.log(binds);
 
 	if (init) {
 		const Animation = require(`../animations/${animationName}`).default;
