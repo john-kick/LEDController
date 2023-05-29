@@ -6,7 +6,6 @@ export default class ShowGradient extends BaseAnimation {
     usesGradient: boolean = true;
     gradient: Gradient | undefined;
     public initialize(params: any[]): void {
-        console.log(params[0]);
         this.createGradient(params[0]);
         for (let i = 0; i < this.strip.length; i++) {
             const color = this.gradient!.getColorAtPos(((i / 287) * (100 - 1)) + 1);

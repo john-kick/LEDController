@@ -45,7 +45,6 @@ app.get("/dist/bundle.js", (_req: Request, res: Response) => {
 });
 
 app.post("/command", (req: Request, res: Response) => {
-	console.log(req.body.params);
 	animator.switchAnimation(req.body.name, req.body.params);
 	res.sendStatus(200); // Send a success status code as a response
 });

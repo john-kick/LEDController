@@ -103,7 +103,6 @@ function addGradientColor(r?: number, g?: number, b?: number, p?: number) {
 	});
 
 	colorClone.addEventListener("change", () => {
-		console.log("change");
 		refreshGradientPreview();
 	});
 

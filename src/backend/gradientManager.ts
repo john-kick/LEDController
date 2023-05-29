@@ -75,11 +75,8 @@ export function editGradient(obj: string) {
 }
 
 export function getGradient(name: string): Promise<string | undefined> {
-	console.log("test 1");
 	return new Promise((resolve, reject) => {
-		console.log("test 2");
 		fs.readFile(gradientJsonPath, 'utf8', (err, data) => {
-			console.log(err, data);
 			if (err) {
 				console.error(err);
 				reject(err);
