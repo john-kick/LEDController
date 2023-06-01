@@ -85,14 +85,6 @@ app.get("/getGradients", (_req: Request, res: Response) => {
 	});
 });
 
-app.post("/manualInput", (req: Request, res: Response) => {
-	const segments = req.body.value.split(" ");
-	if (segments[0] === "animation") {
-		// handleCommand(req.body.value, animator);
-	}
-	res.sendStatus(200);
-});
-
 app.listen(PORT, () => {
 	console.log(`Server listening on http://localhost:${PORT}`);
 });

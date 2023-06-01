@@ -59,12 +59,6 @@ const buttons: button[] = [
 	}
 ];
 
-const manualInputSubmit = document.getElementById("manualInputSubmit") as HTMLButtonElement;
-manualInputSubmit.addEventListener("click", () => {
-	const input = (document.getElementById("manualInput") as HTMLInputElement).value;
-	post({ value: input }, "manualInput");
-});
-
 const buttonContainer = document.getElementById("animation-buttons") as HTMLDivElement;
 const paramsFormContainer = document.getElementById("params-form-container") as HTMLDivElement;
 const paramsForm = document.getElementById("params-form") as HTMLFormElement;

@@ -40,6 +40,9 @@ export class Animator {
     }
 
     public async switchAnimation(animation: string, params: any) {
+        if (!animation) {
+            console.error("No animation name given");
+        }
         const newAnimation = this.animations.get(animation) ?? this.placeholderAnimation;
         if (newAnimation.usesGradient) {
             params.gradient = this.currentGradient.getColors();
