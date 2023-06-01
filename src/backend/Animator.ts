@@ -39,10 +39,10 @@ export class Animator {
         this.currentGradient.get();
     }
 
-    public async switchAnimation(animation: string, params: any[]) {
+    public async switchAnimation(animation: string, params: any) {
         const newAnimation = this.animations.get(animation) ?? this.placeholderAnimation;
         if (newAnimation.usesGradient) {
-            params = [this.currentGradient.getColors()].concat(params);
+            params.gradient = this.currentGradient.getColors();
         }
         if (newAnimation === this.currentAnimation) {
             // Send new parameters to worker
@@ -79,7 +79,7 @@ export class Animator {
     public async switchGradient(name: string) {
         this.currentGradient = new Gradient();
         await this.currentGradient.get(name);
-        const binds = { params: [this.currentGradient.getColors()] }
+        const binds = { params: { gradient: this.currentGradient.getColors() } }
         if (this.worker) {
             this.worker.postMessage(binds);
         }

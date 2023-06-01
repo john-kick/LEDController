@@ -46,32 +46,32 @@ app.get("/dist/bundle.js", (_req: Request, res: Response) => {
 
 app.post("/command", (req: Request, res: Response) => {
 	animator.switchAnimation(req.body.name, req.body.params);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.post("/brightness", (req: Request, res: Response) => {
 	animator.setBrightness(req.body.brightness);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.post("/addGradient", (req: Request<{}, {}, string>, res: Response) => {
 	addGradient(req.body);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.post("/removeGradient", (req: Request, res: Response) => {
 	removeGradient(req.body.gradient);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.post("/editGradient", (req: Request, res: Response) => {
 	editGradient(req.body);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.post("/applyGradient", (req: Request, res: Response) => {
 	animator.switchGradient(req.body.name);
-	res.sendStatus(200); // Send a success status code as a response
+	res.sendStatus(200);
 });
 
 app.get("/getGradients", (_req: Request, res: Response) => {

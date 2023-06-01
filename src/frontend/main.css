@@ -103,6 +103,10 @@ label {
 	margin-top: 20px;
 }
 
+#params-form {
+	height: 0px;
+}
+
 .canvas {
 	background-color: var(--canvas-background);
 	color: var(--text-color);

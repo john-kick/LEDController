@@ -69,6 +69,7 @@ const buttonContainer = document.getElementById("animation-buttons") as HTMLDivE
 const paramsFormContainer = document.getElementById("params-form-container") as HTMLDivElement;
 const paramsForm = document.getElementById("params-form") as HTMLFormElement;
 const paramsContainer = document.getElementById("params-container") as HTMLDivElement;
+const gradientContainer = document.getElementById("gradients-container") as HTMLDivElement;
 
 buttons.forEach((button) => {
 	const buttonElem = new AnimationButton(button.name, button.command, button.params);
@@ -76,11 +77,13 @@ buttons.forEach((button) => {
 		if (buttonElem.classList.contains("selected")) {
 			buttonElem.classList.remove("selected");
 			paramsFormContainer.style.visibility = "hidden";
+			paramsForm.style.height = "0px";
 		} else {
 			const prevSelected = buttonContainer.getElementsByClassName("selected")[0];
 			if (prevSelected) prevSelected.classList.remove("selected");
 			buttonElem.classList.add("selected");
 			paramsFormContainer.style.visibility = "";
+			paramsForm.style.height = "fit-content";
 		}
 
 		// Remove any existing param elements in form
@@ -100,17 +103,20 @@ buttons.forEach((button) => {
 	buttonContainer.appendChild(buttonElem);
 });
 
-paramsForm.addEventListener('submit', (event) => {
+paramsForm.addEventListener("submit", (event) => {
 	event.preventDefault();
 
-	const getValues = paramsForm.getElementsByClassName("get-value") as HTMLCollectionOf<HTMLInputElement>;
-	const toSend: string[] = [];
-	for (let i = 0; i < getValues.length; i++) {
-		toSend.push(getValues[i].value);
+	const formData = new FormData(paramsForm);
+
+	const postData: { [key: string]: string } = {};
+
+	for (const [key, value] of formData.entries()) {
+		postData[key.toLowerCase()] = value.toString();
 	}
 
 	const selected = buttonContainer.getElementsByClassName("selected")[0] as AnimationButton;
-	post({ name: selected.getCommand(), params: toSend }, "command");
+
+	post({ name: selected.getCommand(), params: postData }, "command");
 });
 
 const brightnessSlider = document.getElementById("brightness") as HTMLInputElement;
@@ -138,7 +144,7 @@ getGradients().then((gradients) => {
 
 const applyButton = document.getElementById("apply-gradient") as HTMLButtonElement;
 applyButton.addEventListener("click", () => {
-	const selected = document.getElementsByClassName("selected")[0];
+	const selected = gradientContainer.getElementsByClassName("selected")[0] as HTMLCanvasElement;
 	fetch("/applyGradient", {
 		method: "POST",
 		headers: {
@@ -149,7 +155,6 @@ applyButton.addEventListener("click", () => {
 });
 
 function displayGradients(gradients: String[]) {
-	const gradientContainer = document.getElementById("gradients-container") as HTMLDivElement;
 	if (Object.keys(gradients).length === 0) {
 		gradientContainer.toggleAttribute("hidden");
 		return;
@@ -172,8 +177,8 @@ function displayGradients(gradients: String[]) {
 			canvas.setAttribute("class", "gradient");
 			canvas.style.background = background;
 			canvas.setAttribute("name", gradient);
-			canvas.addEventListener("click", () => {
-				const prev = document.getElementsByClassName("selected")[0];
+			wrapper.addEventListener("click", () => {
+				const prev = gradientContainer.getElementsByClassName("selected")[0];
 				const editButton = document.getElementById("edit-gradient") as HTMLButtonElement;
 				if (prev) {
 					prev.classList.remove("selected");

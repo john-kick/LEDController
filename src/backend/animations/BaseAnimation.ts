@@ -9,16 +9,16 @@ export default class BaseAnimation {
         this.strip = new Strip(288);
     }
 
-    public initialize(_params?: any[]): void {
+    public initialize(_params?: Object): void {
         this.strip.clear();
     }
 
-    public refresh(params?: any[]): void {
+    public refresh(params?: Object): void {
         // Animation has no refresh function. Initialize again instead
         this.initialize(params);
     }
 
-    public step(_params?: any[]): void {
+    public step(): void {
         // noop
     }
 }

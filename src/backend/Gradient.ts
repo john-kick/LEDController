@@ -41,6 +41,7 @@ export default class Gradient {
             this.name = "--default--";
         } else {
             const gradString = await getGradient(name);
+            console.log(name);
 
             if (!gradString) {
                 throw new Error("No such gradient.");

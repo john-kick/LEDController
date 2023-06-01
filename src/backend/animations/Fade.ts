@@ -1,20 +1,22 @@
 import BaseAnimation from "./BaseAnimation";
 import { RGB, hueToRgb } from "../util";
 
+interface FadeParams {
+    speed: string
+}
+
 export default class Fade extends BaseAnimation {
     isAnimated: boolean = true;
     private hue: number = 0;
     private color: RGB = { r: 0, g: 0, b: 0 };
     private stepSize = 1;
 
-    public initialize(params: any[]): void {
-        if (params.length > 1) {
-            this.stepSize = Number(params[0]);
-        }
+    public initialize(params: FadeParams): void {
+        this.stepSize = Number(params.speed);
     }
 
-    public refresh(params: any[]): void {
-        this.stepSize = Number(params[0]);
+    public refresh(params: FadeParams): void {
+        this.stepSize = Number(params.speed);
     }
 
     public step(): void {
