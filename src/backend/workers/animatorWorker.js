@@ -16,6 +16,7 @@ parentPort.on("message", async (binds) => {
 		animation.strip.setBrightness(brightness);
 
 		if (animation.isAnimated) {
+			animation.initialize(params);
 			running = true;
 			while (running) {
 				animation.step();

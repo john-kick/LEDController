@@ -6,6 +6,7 @@ import { Worker } from 'worker_threads';
 import Gradient from "./Gradient";
 import ShowGradient from "./animations/ShowGradient";
 import dgram, { Socket } from "dgram";
+import Noise from "./animations/Noise";
 
 export class Animator {
     animations: Map<string, BaseAnimation>;
@@ -28,7 +29,8 @@ export class Animator {
                 ["fill", new Fill()],
                 ["fade", new Fade()],
                 ["rainbow", new Rainbow()],
-                ["showGradient", new ShowGradient()]
+                ["showGradient", new ShowGradient()],
+                ["noise", new Noise()]
             ]
         );
 
@@ -43,6 +45,7 @@ export class Animator {
         if (!animation) {
             console.error("No animation name given");
         }
+
         const newAnimation = this.animations.get(animation) ?? this.placeholderAnimation;
         if (newAnimation.usesGradient) {
             params.gradient = this.currentGradient.getColors();
