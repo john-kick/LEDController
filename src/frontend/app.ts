@@ -51,8 +51,8 @@ const buttons: button[] = [
 		name: "Noise",
 		command: "noise",
 		params: [
-			{ name: "stepsize", type: ["range", "0", "10", "0.1"] },
-			{ name: "resolution", type: ["range", "1", "1000", "1"] }
+			{ name: "speed", type: ["range", "0", "100", "1"] },
+			{ name: "resolution", type: ["range", "1", "100", "1"] }
 		]
 	},
 	{

@@ -6,4 +6,5 @@ libs/
 package-lock.json
 prettierignore
 test.ts
+test.js
 gradients.json

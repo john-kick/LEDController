@@ -1,5 +1,4 @@
 import { parentPort } from "worker_threads";
-import { send } from "../connector.js";
 import { delay } from "../util.js";
 import dgram from "dgram";
 

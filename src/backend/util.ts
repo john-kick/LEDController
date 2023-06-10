@@ -4,15 +4,38 @@ export interface RGB {
 	b: number
 }
 
-export function getPosition(str: string, substr: string, index: number) {
+/**
+ * Honestly I have no fucking idea what is done here and what this function is used for...
+ */
+export function getPosition(
+	str: string,
+	substr: string,
+	index: number
+) {
 	return str.split(substr, index).join(substr).length;
 }
 
+/**
+ * The same as hsvToRgb but with s and v set to 1
+ * @param h Hue (0 - 360)
+ * @returns An RGB Object
+ */
 export function hueToRgb(h: number): RGB {
 	return hsvToRgb(h, 1, 1);
 }
 
-export function hsvToRgb(h: number, s: number, v: number): RGB {
+/**
+ * 
+ * @param h Hue (0 - 360)
+ * @param s Saturation (0 - 1)
+ * @param v Visibility (0 - 1)
+ * @returns An RGB Object
+ */
+export function hsvToRgb(
+	h: number,
+	s: number,
+	v: number
+): RGB {
 	if (h < 0 || h > 360) throw new Error("Hue (h) must be between 0 and 360. Actual: " + h);
 	if (s < 0 || s > 1) throw new Error("Saturation (s) must be between 0 and 1. Actual: " + s);
 	if (v < 0 || s > 1) throw new Error("Brightness (v) must be between 0 and 1. Actual: " + v);
@@ -74,6 +97,38 @@ export function hsvToRgb(h: number, s: number, v: number): RGB {
 	}
 }
 
+/**
+ * @param ms The amount of time to wait in milliseconds
+ * @returns 
+ */
 export function delay(ms: number) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * 
+ * @param inMin Lower end of the input range
+ * @param inMax Upper end of the input range
+ * @param outMin Lower end of the output range
+ * @param outMax Upper end of the output range
+ * @param val The value to map from the input range to the output range. Must be inside the input range
+ * @returns The mapped value in the output range
+ */
+export function mapNumber(
+	inMin: number,
+	inMax: number,
+	outMin: number,
+	outMax: number,
+	val: number
+) {
+	if (val < inMin || val > inMax) {
+		throw new Error(`val must be inside of the input range ${inMin} - ${inMax}. Actual value: ${val}`);
+	}
+	return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+}
+
+/**
+ * Contains 10 chars with increasing "density" (white -> black)
+ * Can be used to e.g. display noise in the console
+ */
+export const BlackWhiteCharRepresentation = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
