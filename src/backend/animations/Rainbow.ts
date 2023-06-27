@@ -8,9 +8,6 @@ interface RainbowParams {
 export default class Rainbow extends BaseAnimation {
     private startHue = 0;
     isAnimated: boolean = true;
-
-    testTime = 0;
-
     stepSize: number = 1;
 
     public initialize(params: RainbowParams): void {

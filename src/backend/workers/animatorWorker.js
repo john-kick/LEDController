@@ -7,48 +7,84 @@ let animation;
 const socket = dgram.createSocket("udp4");
 
 parentPort.on("message", async (binds) => {
-	const { init, animationName, params, brightness } = binds;
+	if (!animation && !binds.animationName) {
+		return;
+	}
 
-	if (init) {
+	if (typeof binds.running !== "undefined") {
+		running = binds.running;
+		if (running) {
+			animate();
+		}
+		return;
+	}
+
+	if (binds.animationName) {
+		initialize(binds.animationName, binds.params, binds.brightness);
+	} else if (binds.params) {
+		refresh(binds.params);
+	}
+	if (binds.brightness || binds.brightness === 0) {
+		animation.strip.setBrightness(binds.brightness);
+		if (!animation.isAnimated) {
+			updateStrip();
+		}
+	}
+});
+
+async function initialize(animationName, params, brightness) {
+	try {
 		const Animation = require(`../animations/${animationName}`).default;
 		animation = new Animation();
 		animation.strip.setBrightness(brightness);
 
+		animation.initialize(params);
 		if (animation.isAnimated) {
-			animation.initialize(params);
-			running = true;
-			while (running) {
-				animation.step();
-				send();
-				await delay(1000 / 144);
-			}
+			animate();
 		} else {
-			animation.initialize(params);
-			send();
+			updateStrip();
 		}
-	} else if (params) {
+	} catch (error) {
+		throw new Error(`Error while initializing animation: ${error.message}`);
+	}
+}
+
+async function refresh(params) {
+	running = false;
+	try {
+		if (!animation) {
+			throw new Error("No animation initialized before trying to refresh");
+		}
+
 		if (animation.isAnimated) {
 			animation.refresh(params);
+			animate();
 		} else {
 			animation.initialize(params);
-			send();
+			updateStrip();
 		}
+	} catch (error) {
+		throw new Error(`Error while refreshing animation: ${error.message}`);
 	}
-	if (brightness || brightness === 0) {
-		animation.strip.setBrightness(brightness);
-		if (!animation.isAnimated) {
-			send();
+}
+
+async function animate() {
+	running = true;
+	try {
+		while (running) {
+			animation.step();
+			updateStrip();
+			await delay(1000 / 1);
 		}
+	} catch (error) {
+		throw new Error(`Error while animating: ${error.message}`);
 	}
-});
+}
 
-// Listen for a message to stop the animation
-parentPort.on("close", () => {
-	running = false;
-});
-
-function send() {
-	socket.send(animation.strip.toUint8Array(), 8888, "192.168.178.98", (err) => {
-		parentPort.emit("messageerror", err);
-	});
+function updateStrip() {
+	try {
+		socket.send(animation.strip.toUint8Array(), 8888, "192.168.178.98");
+	} catch (error) {
+		postError(`Error while updating the strip: ${error.message}`);
+	}
 }

@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 
 import { addGradient, editGradient, removeGradient } from "./gradientManager";
-import { Animator } from "./Animator.js";
+import { Animator } from "./Animator";
 
 const PORT = 8888;
 const baseDirName = path.resolve(path.dirname(""));

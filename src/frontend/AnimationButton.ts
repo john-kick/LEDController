@@ -2,7 +2,18 @@ export default class AnimationButton extends HTMLButtonElement {
     private command: string;
     private params: AnimationParameter[];
 
-    constructor(name: string, command: string, params: AnimationParameter[]) {
+    /**
+     * Extends the HTMLButtonElement to easily implement the animation parameters
+     * 
+     * @param name Will be displayed on browser
+     * @param command The identifier of the animation. Needs to match with Animator::animations
+     * @param params Parameters of the animation. Will be displayed as sliders in the browser and needs to match the animations parameter interface
+     */
+    constructor(
+        name: string,
+        command: string,
+        params: AnimationParameter[]
+    ) {
         super();
         this.name = name;
         this.command = command;
@@ -12,6 +23,9 @@ export default class AnimationButton extends HTMLButtonElement {
         this.textContent = this.name;
     }
 
+    /**
+     * @returns The HTML elements of the animation's parameters in an array
+     */
     public getParamsHTML() {
         const elements: HTMLElement[] = [];
         this.params.forEach((param) => {

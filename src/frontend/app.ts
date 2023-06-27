@@ -39,7 +39,7 @@ const buttons: button[] = [
 		name: "Rainbow",
 		command: "rainbow",
 		params: [
-			{ name: "Speed", type: ["range", "0", "10", "0.1"] }
+			{ name: "speed", type: ["range", "0", "10", "0.1"] }
 		]
 	},
 	{
@@ -151,6 +151,11 @@ applyButton.addEventListener("click", () => {
 	});
 });
 
+/**
+ * 
+ * @param gradients 
+ * @returns 
+ */
 function displayGradients(gradients: String[]) {
 	if (Object.keys(gradients).length === 0) {
 		gradientContainer.toggleAttribute("hidden");

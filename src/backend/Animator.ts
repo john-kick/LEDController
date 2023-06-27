@@ -18,7 +18,7 @@ export class Animator {
     currentAnimation: BaseAnimation;
     currentAnimationParams: any[] = [];
     currentGradient: Gradient;
-    worker: Worker | undefined;
+    worker: Worker;
 
     public constructor() {
         this.socket = dgram.createSocket('udp4');
@@ -39,56 +39,53 @@ export class Animator {
         this.currentAnimation.initialize();
         this.currentGradient = new Gradient();
         this.currentGradient.get();
+
+        this.worker = new Worker('./dist/backend/workers/animatorWorker.js');
+        this.buildWorker();
     }
 
     public async switchAnimation(animation: string, params: any) {
         if (!animation) {
             console.error("No animation name given");
+            return;
         }
 
         const newAnimation = this.animations.get(animation) ?? this.placeholderAnimation;
         if (newAnimation.usesGradient) {
             params.gradient = this.currentGradient.getColors();
         }
+
         if (newAnimation === this.currentAnimation) {
-            // Send new parameters to worker
-            const binds = { params: params }
-            this.worker!.postMessage(binds);
-        } else {
-            this.currentAnimation = newAnimation;
-
-            // Terminate any already running workers
-            if (this.worker) {
-                this.worker.terminate();
-            }
-
-            // Start new worker
-            const binds = {
-                init: true,
-                animationName: this.currentAnimation.constructor.name,
-                params: params,
-                brightness: this.brightness
-            }
-
-            this.worker = new Worker('./dist/backend/workers/animatorWorker.js');
+            const binds = { params: params };
             this.worker.postMessage(binds);
-
-            this.worker.on("message", (msg) => {
-                if (msg) { console.log(msg); }
-            });
-            this.worker.on("messageerror", (msg) => {
-                if (msg) { console.error(msg); }
-            });
+            return;
         }
+
+        this.currentAnimation = newAnimation;
+
+        const binds = {
+            animationName: this.currentAnimation.constructor.name,
+            params: params,
+            brightness: this.brightness
+        }
+
+        // stopping currently running animation
+        this.worker.postMessage({ running: false });
+        this.worker.postMessage(binds);
     }
 
     public async switchGradient(name: string) {
         this.currentGradient = new Gradient();
         await this.currentGradient.get(name);
-        const binds = { params: { gradient: this.currentGradient.getColors() } }
-        if (this.worker) {
-            this.worker.postMessage(binds);
+        if (!this.currentAnimation.usesGradient) {
+            return;
         }
+
+        console.log(this.currentGradient.getColors());
+        const binds = { params: { gradient: this.currentGradient.getColors() } };
+        this.worker.postMessage({ running: false });
+        this.worker.postMessage(binds);
+        this.worker.postMessage({ running: true });
     }
 
     public setBrightness(brightness: number) {
@@ -96,5 +93,19 @@ export class Animator {
         if (this.worker) {
             this.worker.postMessage({ brightness: brightness });
         }
+    }
+
+    private buildWorker() {
+        this.worker.on("message", (msg) => { console.log(msg); });
+        this.worker.on("error", (error) => {
+            console.error("Error in animator worker");
+            console.error(error.stack);
+            this.rebuildWorker();
+        });
+    }
+
+    private rebuildWorker() {
+        this.worker = new Worker('./dist/backend/workers/animatorWorker.js');
+        this.buildWorker();
     }
 }

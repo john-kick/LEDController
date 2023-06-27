@@ -1,6 +1,11 @@
 import { RGB, getPosition } from "./util";
 import { getGradient } from "./gradientManager";
 
+interface RawColor {
+    color: string,
+    position: string
+}
+
 export interface ColorStep {
     position: number,
     color: RGB
@@ -40,24 +45,29 @@ export default class Gradient {
             ];
             this.name = "--default--";
         } else {
-            const gradString = await getGradient(name);
-            console.log(name);
-
+            let gradString = await getGradient(name);
             if (!gradString) {
                 throw new Error("No such gradient.");
             }
 
-            const data = gradString.substring(gradString.indexOf('[') + 2, getPosition(gradString, ']', 2) - 2).split("},{");
-            const colors = data.map((color) => {
-                return color.substring(color.indexOf('(') + 1, color.indexOf(')')).split(",");
-            });
-            const positions = data.map((color) => {
-                return color.substring(color.indexOf('position') + 11, color.length - 1);
+            gradString = gradString.replace(/\s/g, "");
+            const rawColors = gradString.substring(gradString.indexOf(":") + 1);
+            const colorsArray = JSON.parse(rawColors);
+
+            this.colors = colorsArray.map((color: RawColor) => {
+                const colorStr = color.color;
+                const [r, g, b] = colorStr.substring(colorStr.indexOf("(") + 1, colorStr.indexOf(")")).split(",");
+
+                return {
+                    position: Number(color.position),
+                    color: {
+                        r: Number(r),
+                        g: Number(g),
+                        b: Number(b)
+                    }
+                };
             });
 
-            for (let i = 0; i < colors.length; i++) {
-                this.addColor(Number(colors[i][0]), Number(colors[i][1]), Number(colors[i][2]), Number(positions[i]));
-            }
             this.name = name;
         }
     }
@@ -91,9 +101,13 @@ export default class Gradient {
     public getColorAtPos(pos: number) {
         // Get prev and next color stop of i
         if (pos < 1 || pos > 100) throw new Error("pos needs to be between 1 and 100. Actual: " + pos);
+        if (!this.colors.length) { throw new Error("Gradient has no colors"); }
 
         let i;
+        console.log(this.colors.length);
         for (i = 0; i < this.colors.length; i++) {
+            console.log(this.colors[i]);
+            console.log(this.colors[i].position);
             if (this.colors[i].position >= pos) break;
         }
         if (this.colors[i].position === pos) return this.colors[i].color;
