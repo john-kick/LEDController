@@ -6,6 +6,8 @@ let running = false;
 let animation;
 const socket = dgram.createSocket("udp4");
 
+const FPS = 144;
+
 parentPort.on("message", async (binds) => {
 	if (!animation && !binds.animationName) {
 		return;
@@ -74,7 +76,7 @@ async function animate() {
 		while (running) {
 			animation.step();
 			updateStrip();
-			await delay(1000 / 1);
+			await delay(1000 / FPS);
 		}
 	} catch (error) {
 		throw new Error(`Error while animating: ${error.message}`);
