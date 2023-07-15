@@ -101,15 +101,13 @@ export default class Gradient {
     public getColorAtPos(pos: number) {
         // Get prev and next color stop of i
         if (pos < 1 || pos > 100) throw new Error("pos needs to be between 1 and 100. Actual: " + pos);
-        if (!this.colors.length) { throw new Error("Gradient has no colors"); }
+        if (this.colors.length < 1) { throw new Error("Gradient has no colors"); }
 
         let i;
-        console.log(this.colors.length);
         for (i = 0; i < this.colors.length; i++) {
-            console.log(this.colors[i]);
-            console.log(this.colors[i].position);
             if (this.colors[i].position >= pos) break;
         }
+        console.trace();
         if (this.colors[i].position === pos) return this.colors[i].color;
         const curr = this.colors[i];
         const prev = this.colors[i - 1];

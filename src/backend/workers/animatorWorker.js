@@ -72,14 +72,10 @@ async function refresh(params) {
 
 async function animate() {
 	running = true;
-	try {
-		while (running) {
-			animation.step();
-			updateStrip();
-			await delay(1000 / FPS);
-		}
-	} catch (error) {
-		throw new Error(`Error while animating: ${error.message}`);
+	while (running) {
+		animation.step();
+		updateStrip();
+		await delay(1000 / FPS);
 	}
 }
 
@@ -89,4 +85,8 @@ function updateStrip() {
 	} catch (error) {
 		postError(`Error while updating the strip: ${error.message}`);
 	}
+}
+
+function delay(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }

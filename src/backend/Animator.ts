@@ -81,7 +81,6 @@ export class Animator {
             return;
         }
 
-        console.log(this.currentGradient.getColors());
         const binds = { params: { gradient: this.currentGradient.getColors() } };
         this.worker.postMessage({ running: false });
         this.worker.postMessage(binds);
