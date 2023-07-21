@@ -70,7 +70,7 @@ app.post("/editGradient", (req: Request, res: Response) => {
 });
 
 app.post("/applyGradient", (req: Request, res: Response) => {
-	animator.switchGradient(req.body.name);
+	animator.switchGradient(req.body.gradientName, req.body.currentAnimation);
 	res.sendStatus(200);
 });
 

@@ -12,6 +12,7 @@ interface NoiseParams {
 }
 
 export default class Noise extends BaseAnimation {
+    private readonly speedMultiplier: number = 0.00001;
     usesGradient: boolean = true;
     isAnimated: boolean = true;
 
@@ -26,13 +27,14 @@ export default class Noise extends BaseAnimation {
         this.createGradient(params.gradient);
         this.noiseFunction = createNoise3D();
 
-        this.speed = Number(params.speed);
-        this.resolution = 1 / params.resolution;
+        this.speed = Number(params.speed) * this.speedMultiplier;
+        this.resolution = 1 / Number(params.resolution);
     }
 
     public refresh(params: NoiseParams): void {
         this.createGradient(params.gradient);
-        this.speed = Number(params.speed) * 0.0001;
+
+        this.speed = Number(params.speed) * this.speedMultiplier;
         this.resolution = 1 / Number(params.resolution);
     }
 

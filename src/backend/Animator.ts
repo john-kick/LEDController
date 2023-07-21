@@ -74,17 +74,16 @@ export class Animator {
         this.worker.postMessage(binds);
     }
 
-    public async switchGradient(name: string) {
+    public async switchGradient(gradientName: string, animationName: string) {
         this.currentGradient = new Gradient();
-        await this.currentGradient.get(name);
-        if (!this.currentAnimation.usesGradient) {
+        await this.currentGradient.get(gradientName);
+        const currentAnimation: BaseAnimation = this.animations.get(animationName) ?? this.placeholderAnimation;
+        if (!currentAnimation.usesGradient) {
             return;
         }
 
-        const binds = { params: { gradient: this.currentGradient.getColors() } };
-        this.worker.postMessage({ running: false });
+        const binds = { switchGradient: { gradient: this.currentGradient.getColors() } };
         this.worker.postMessage(binds);
-        this.worker.postMessage({ running: true });
     }
 
     public setBrightness(brightness: number) {

@@ -104,7 +104,6 @@ paramsForm.addEventListener("submit", (event) => {
 	event.preventDefault();
 
 	const formData = new FormData(paramsForm);
-
 	const postData: { [key: string]: string } = {};
 
 	for (const [key, value] of formData.entries()) {
@@ -112,8 +111,10 @@ paramsForm.addEventListener("submit", (event) => {
 	}
 
 	const selected = buttonContainer.getElementsByClassName("selected")[0] as AnimationButton;
+	const animationName = selected.getCommand();
+	localStorage.setItem("currentAnimation", animationName);
 
-	post({ name: selected.getCommand(), params: postData }, "command");
+	post({ name: animationName, params: postData }, "command");
 });
 
 const brightnessSlider = document.getElementById("brightness") as HTMLInputElement;
@@ -141,13 +142,21 @@ getGradients().then((gradients) => {
 
 const applyButton = document.getElementById("apply-gradient") as HTMLButtonElement;
 applyButton.addEventListener("click", () => {
-	const selected = gradientContainer.getElementsByClassName("selected")[0] as HTMLCanvasElement;
+	const selected = gradientContainer.getElementsByClassName("selected")[0];
+	if (!selected) {
+		return;
+	}
+
+	const gradientName = selected.getAttribute("name")!;
 	fetch("/applyGradient", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ name: selected.getAttribute("name") ?? "" }),
+		body: JSON.stringify({
+			gradientName: gradientName,
+			currentAnimation: localStorage.getItem("currentAnimation")
+		}),
 	});
 });
 

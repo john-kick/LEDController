@@ -107,7 +107,6 @@ export default class Gradient {
         for (i = 0; i < this.colors.length; i++) {
             if (this.colors[i].position >= pos) break;
         }
-        console.trace();
         if (this.colors[i].position === pos) return this.colors[i].color;
         const curr = this.colors[i];
         const prev = this.colors[i - 1];
