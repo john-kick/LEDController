@@ -1,7 +1,8 @@
 import BaseAnimation from "./animations/BaseAnimation";
 import Fade from "./animations/Fade";
 import Fill from "./animations/Fill";
-import Rainbow from "./animations/Rainbow"
+import Rainbow from "./animations/Rainbow";
+import Theater from "./animations/Theater";
 import { Worker } from 'worker_threads';
 import Gradient from "./Gradient";
 import ShowGradient from "./animations/ShowGradient";
@@ -29,6 +30,7 @@ export class Animator {
                 ["fill", new Fill()],
                 ["fade", new Fade()],
                 ["rainbow", new Rainbow()],
+                ["theater", new Theater()],
                 ["showGradient", new ShowGradient()],
                 ["noise", new Noise()]
             ]
