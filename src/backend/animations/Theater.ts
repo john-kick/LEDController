@@ -5,19 +5,14 @@ interface TheaterParams {
     red: string;
     green: string;
     blue: string;
-    speed: string;
-    segment: string;
-    gap: string;
+    size: number;
 }
 
 export default class Theater extends BaseAnimation {
     isAnimated: boolean = true;
-    color: RGB = { r: 0, g: 0, b: 0 };
-    speed: number = 0;
-    segment: number = 0;
-    gap: number = 0;
-    completeLength: number = 0;
 
+    color: RGB = { r: 0, g: 0, b: 0 };
+    size: number = 1;
     position: number = 0;
 
     public initialize(params: TheaterParams): void {
@@ -26,12 +21,8 @@ export default class Theater extends BaseAnimation {
             g: Number(params.green),
             b: Number(params.blue),
         } as RGB;
-        this.speed = Number(params.speed);
-        this.segment = Number(params.segment);
-        this.gap = Number(params.gap);
+        this.size = params.size;
         this.position = 0;
-
-        this.completeLength = this.segment + this.gap;
     }
 
     public refresh(params: TheaterParams): void {
@@ -40,22 +31,19 @@ export default class Theater extends BaseAnimation {
             g: Number(params.green),
             b: Number(params.blue),
         } as RGB;
-        this.speed = Number(params.speed);
-        this.segment = Number(params.segment);
-        this.gap = Number(params.gap);
-
-        this.completeLength = this.segment + this.gap;
+        this.size = params.size;
+        this.position = 0;
     }
 
     public step(): void {
-        this.strip.clear();
-
         for (let i = 0; i < this.strip.length; i++) {
-            if ((i % this.completeLength) <= this.segment) {
+            if (Math.floor(i / this.size) % 2 === 0) {
                 this.strip.setPixelColor((this.position + i) % this.strip.length, this.color);
+            } else {
+                this.strip.setPixelColor((this.position + i) % this.strip.length, {r: 0, g: 0, b: 0});
             }
         }
 
-        this.position = Math.floor((this.position + 1) * (this.speed)) % this.strip.length;
+        this.position = (this.position + 1) % 288;
     }
 }

@@ -43,6 +43,9 @@
 		"webpack-dev-server": "^4.13.3"
 	},
 	"scripts": {
-		"build": "webpack"
+		"build": "webpack",
+		"start": "node .\\dist\\backend\\app.js",
+		"tsc": "tsc",
+		"watch": "tsc -w"
 	}
 }

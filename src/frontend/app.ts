@@ -56,20 +56,13 @@ const buttons: button[] = [
 		]
 	},
 	{
-		name: "Test",
-		command: "test",
-		params: []
-	},
-	{
 		name: "Theater",
 		command: "theater",
 		params: [
 			{ name: "red", type: ["range", "0", "255", "1"] },
 			{ name: "green", type: ["range", "0", "255", "1"] },
 			{ name: "blue", type: ["range", "0", "255", "1"] },
-			{ name: "speed", type: ["range", "0", "10", "0.1"] },
-			{ name: "segment", type: ["range", "1", "100", "1"] },
-			{ name: "gap", type: ["range", "0", "100", "1"] },
+			{ name: "size", type: ["range", "1", "288", "1"]}
 		],
 	}
 ];

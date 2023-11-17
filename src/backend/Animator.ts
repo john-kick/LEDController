@@ -105,6 +105,7 @@ export class Animator {
     }
 
     private rebuildWorker() {
+        console.log("rebuilding worker");
         this.worker = new Worker('./dist/backend/workers/animatorWorker.js');
         this.buildWorker();
     }
