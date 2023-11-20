@@ -120,6 +120,8 @@ export default class Gradient {
 
     public static getDefaultGradient() {
         const grad = new Gradient();
+        grad.get();
+        return grad;
     }
 
     private lerp(col1: RGB, col2: RGB, i: number): RGB {

@@ -4,13 +4,13 @@ import path from "path";
 import fs from "fs";
 
 import { addGradient, editGradient, removeGradient } from "./gradientManager";
-import { Animator } from "./Animator";
+import { EffectController } from "./EffectController";
 
-const PORT = 8888;
+const PORT = 80;
 const baseDirName = path.resolve(path.dirname(""));
 const app = express();
 
-const animator: Animator = new Animator();
+const animationController: EffectController = new EffectController();
 
 const gradPath = path.join(baseDirName, "/src/backend", "gradients.json");
 if (!fs.existsSync(gradPath)) {
@@ -45,12 +45,12 @@ app.get("/dist/bundle.js", (_req: Request, res: Response) => {
 });
 
 app.post("/command", (req: Request, res: Response) => {
-	animator.switchAnimation(req.body.name, req.body.params);
+	animationController.updateEffect(req.body.name, req.body.params);
 	res.sendStatus(200);
 });
 
 app.post("/brightness", (req: Request, res: Response) => {
-	animator.setBrightness(req.body.brightness);
+	animationController.setBrightness(req.body.brightness);
 	res.sendStatus(200);
 });
 
@@ -70,7 +70,7 @@ app.post("/editGradient", (req: Request, res: Response) => {
 });
 
 app.post("/applyGradient", (req: Request, res: Response) => {
-	animator.switchGradient(req.body.gradientName, req.body.currentAnimation);
+	// animationController.switchGradient(req.body.gradientName);
 	res.sendStatus(200);
 });
 

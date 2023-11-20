@@ -1,9 +1,10 @@
+import { EffectController } from "../EffectController";
 import Gradient, { ColorStep } from "../Gradient";
 import { mapNumber } from "../util";
-import BaseAnimation from "./BaseAnimation";
+import Effect, { EffectParams } from "./Effect";
 import { NoiseFunction3D, createNoise3D } from "simplex-noise";
 
-interface NoiseParams {
+interface NoiseParams extends EffectParams {
     gradient: ColorStep[];
     speed: number;
     width: number;
@@ -11,8 +12,8 @@ interface NoiseParams {
     resolution: number;
 }
 
-export default class Noise extends BaseAnimation {
-    private readonly speedMultiplier: number = 0.00001;
+export default class Noise extends Effect {
+    private readonly speedMultiplier: number = 0.0005;
     usesGradient: boolean = true;
     isAnimated: boolean = true;
 
@@ -23,19 +24,14 @@ export default class Noise extends BaseAnimation {
     resolution: number = 1;
     gradient: Gradient | undefined;
     noiseFunction: NoiseFunction3D | undefined;
-    public initialize(params: NoiseParams): void {
-        this.createGradient(params.gradient);
+
+    public initialize(parameters: NoiseParams): void {
+        this.gradient = new Gradient();
+        this.gradient.build(parameters.gradient);
         this.noiseFunction = createNoise3D();
 
-        this.speed = Number(params.speed) * this.speedMultiplier;
-        this.resolution = 1 / Number(params.resolution);
-    }
-
-    public refresh(params: NoiseParams): void {
-        this.createGradient(params.gradient);
-
-        this.speed = Number(params.speed) * this.speedMultiplier;
-        this.resolution = 1 / Number(params.resolution);
+        this.speed = Number(parameters.speed) * this.speedMultiplier;
+        this.resolution = 1 / Number(parameters.resolution);
     }
 
     public step() {
@@ -45,12 +41,5 @@ export default class Noise extends BaseAnimation {
             this.strip.setPixelColor(i, this.gradient!.getColorAtPos(y));
         }
         this.angle = (this.angle + this.speed) % (Math.PI * 2);
-    }
-
-    private createGradient(colors: ColorStep[]) {
-        if (!this.gradient) {
-            this.gradient = new Gradient();
-        }
-        this.gradient.build(colors);
     }
 }

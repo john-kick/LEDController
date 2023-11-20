@@ -1,37 +1,28 @@
 import { RGB } from "../util";
-import BaseAnimation from "./BaseAnimation";
+import AnimatedEffect from "./AnimatedEffect";
+import Effect, { EffectParams } from "./Effect";
 
-interface TheaterParams {
+interface TheaterParams extends EffectParams {
     red: string;
     green: string;
     blue: string;
     size: number;
 }
 
-export default class Theater extends BaseAnimation {
+export default class Theater extends AnimatedEffect {
     isAnimated: boolean = true;
 
     color: RGB = { r: 0, g: 0, b: 0 };
     size: number = 1;
     position: number = 0;
 
-    public initialize(params: TheaterParams): void {
+    public initialize(parameters: TheaterParams): void {
         this.color = {
-            r: Number(params.red),
-            g: Number(params.green),
-            b: Number(params.blue),
+            r: Number(parameters.red),
+            g: Number(parameters.green),
+            b: Number(parameters.blue),
         } as RGB;
-        this.size = params.size;
-        this.position = 0;
-    }
-
-    public refresh(params: TheaterParams): void {
-        this.color = {
-            r: Number(params.red),
-            g: Number(params.green),
-            b: Number(params.blue),
-        } as RGB;
-        this.size = params.size;
+        this.size = parameters.size;
         this.position = 0;
     }
 

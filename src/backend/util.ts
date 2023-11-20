@@ -127,6 +127,15 @@ export function mapNumber(
 	return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
+export function validate(
+	value: number,
+	min?: number,
+	max?: number
+): boolean {
+	if (min && value < min || max && value > max) return false;
+	return true;
+}
+
 /**
  * Contains 10 chars with increasing "density" (white -> black)
  * Can be used to e.g. display noise in the console

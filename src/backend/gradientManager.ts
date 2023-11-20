@@ -1,7 +1,5 @@
 import fs from "fs";
-// import { send } from "./connector.js";
-import { getPosition } from "./util.js";
-import express, { Request, Response } from "express";
+import { getPosition } from "./util";
 import path from "path";
 
 const baseDirName = path.resolve(path.dirname(""));
@@ -53,6 +51,7 @@ export function removeGradient(name: string) {
 }
 
 export function editGradient(obj: string) {
+	console.log("editing gradient...");
 	fs.readFile(gradientJsonPath, "utf8", (err, data) => {
 		if (err) {
 			console.error(err);
