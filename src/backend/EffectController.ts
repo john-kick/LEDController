@@ -40,6 +40,10 @@ export class EffectController {
         
     }
 
+    public static switchGradient(gradientName: string): void {
+        this.currentGradient.get(gradientName);
+    }
+
     public static getGradient(): Gradient {
         return EffectController.currentGradient;
     }

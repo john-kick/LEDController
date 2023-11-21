@@ -5,8 +5,6 @@ const sbCanvas = document.getElementById("sb-canvas") as HTMLCanvasElement;
 const sbContext = sbCanvas.getContext("2d") as CanvasRenderingContext2D;
 const sbMarker = document.getElementById("sb-marker") as HTMLDivElement;
 
-const gradientPreview = document.getElementById("gradient-preview") as HTMLDivElement;
-
 const hueSlider = document.getElementById("hue-slider") as HTMLInputElement;
 const hueSliderContainer = document.getElementById("hue-slider-container") as HTMLDivElement;
 

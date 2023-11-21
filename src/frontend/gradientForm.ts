@@ -83,11 +83,7 @@ addGradientColorButton.addEventListener("click", () => {
 });
 addGradientColor();
 
-function addGradientColor(r?: number, g?: number, b?: number, p?: number) {
-	r = r || 0;
-	g = g || 255;
-	b = b || 255;
-
+function addGradientColor(r: number = 0, g: number = 255, b: number = 255, p?: number) {
 	const numColors = gradientColorContainer.getElementsByClassName("gradient-color").length;
 	const div = document.createElement("div");
 	div.setAttribute("class", "color-container");
@@ -121,7 +117,10 @@ function addGradientColor(r?: number, g?: number, b?: number, p?: number) {
 	div.appendChild(colorClone);
 	div.appendChild(inputClone);
 
-	inputClone.value = (p ?? (numColors === 0 ? 0 : 100)).toString();
+	if (!(p || p === 0)) {
+		p = numColors === 0 ? 0 : 100;
+	}
+	inputClone.value = p.toString();
 
 	if (numColors === 5) {
 		addGradientColorButton.toggleAttribute("hidden");
@@ -198,8 +197,10 @@ form.onsubmit = async (event) => {
 	event.preventDefault();
 
 	const colorElements = document.getElementsByClassName("gradient-color") as HTMLCollectionOf<HTMLDivElement>;
-	const colorLocations = document.getElementsByClassName("color-location") as HTMLCollectionOf<HTMLInputElement>;
 	const gradientName = (document.getElementById("gradient-name-input") as HTMLInputElement).value;
+
+	// used in eval(), do not remove
+	const colorLocations = document.getElementsByClassName("color-location") as HTMLCollectionOf<HTMLInputElement>;
 
 	if (colorElements.length < 2) {
 		displayFormError("Gradients need at least 2 colors");
@@ -245,7 +246,7 @@ form.onsubmit = async (event) => {
 	modal.style.display = "none";
 	setTimeout(function () {
 		window.location.reload();
-	}, 10);
+	}, 100);
 };
 
 async function doesNameExist(name: string) {
