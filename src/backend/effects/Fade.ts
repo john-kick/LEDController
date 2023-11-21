@@ -1,8 +1,8 @@
-import { EffectParams } from "./Effect";
+import { EffectParameters } from "./Effect";
 import AnimatedEffect from "./AnimatedEffect";
 import { RGB, hueToRgb } from "../util";
 
-interface FadeParams extends EffectParams {
+interface FadeParameters extends EffectParameters {
     speed: string
 }
 
@@ -12,7 +12,7 @@ export default class Fade extends AnimatedEffect {
     private color: RGB = { r: 0, g: 0, b: 0 };
     private stepSize = 1;
 
-    public initialize(parameters: FadeParams): void {
+    public initialize(parameters: FadeParameters): void {
         this.stepSize = Number(parameters.speed);
     }
 

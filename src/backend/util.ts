@@ -127,17 +127,37 @@ export function mapNumber(
 	return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
 
-export function validate(
+export interface validatable {
 	value: number,
 	min?: number,
-	max?: number
-): boolean {
-	if (min && value < min || max && value > max) return false;
-	return true;
+	max?: number,
+	eMin?: number,
+	eMax?: number
+}
+
+/**
+ * Validates if a value falls within a specified range.
+ *
+ * @param v
+ * @returns `true` if the value is within the specified range, `false` otherwise.
+ * @throws Error if both min and eMin (or max and eMax) are defined simultaneously.
+ */
+export function validate(v: validatable): boolean {
+    if ((v.min || v.min === 0) && (v.eMin || v.eMin === 0)) throw new Error('Cannot define min and eMin at the same time');
+    if ((v.max || v.max === 0) && (v.eMax || v.eMax === 0)) throw new Error('Cannot define max and eMax at the same time');
+    return !((v.min || v.min === 0) && v.value < v.min!)
+		&& !((v.eMin || v.eMin === 0) && v.value <= v.eMin!)
+		&& !((v.max || v.max === 0) && v.value > v.max!)
+		&& !((v.eMax || v.eMax === 0) && v.value >= v.eMax!);
+}
+
+export const START_TIMESTAMP = Date.now()
+export function getRuntime(): number {
+	return Date.now() - START_TIMESTAMP;
 }
 
 /**
  * Contains 10 chars with increasing "density" (white -> black)
  * Can be used to e.g. display noise in the console
  */
-export const BlackWhiteCharRepresentation = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];
+export const BlackWhiteCharRepresentation = [" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"];;

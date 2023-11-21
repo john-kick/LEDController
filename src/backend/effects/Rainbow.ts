@@ -1,8 +1,8 @@
 import { hueToRgb } from "../util";
 import AnimatedEffect from "./AnimatedEffect";
-import Effect, { EffectParams } from "./Effect";
+import Effect, { EffectParameters } from "./Effect";
 
-interface RainbowParams extends EffectParams {
+interface RainbowParameters extends EffectParameters {
     speed: string
 }
 
@@ -11,7 +11,7 @@ export default class Rainbow extends AnimatedEffect {
     isAnimated: boolean = true;
     stepSize: number = 1;
 
-    public initialize(parameters: RainbowParams): void {
+    public initialize(parameters: RainbowParameters): void {
         this.stepSize = Number(parameters.speed);
     }
 

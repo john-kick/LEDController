@@ -1,6 +1,6 @@
 import Strip from "../Strip";
 
-export interface EffectParams {}
+export interface EffectParameters {}
 
 export default abstract class Effect {
     strip: Strip;

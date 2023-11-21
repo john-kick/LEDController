@@ -1,10 +1,10 @@
 import { EffectController } from "../EffectController";
 import Gradient, { ColorStep } from "../Gradient";
 import { mapNumber } from "../util";
-import Effect, { EffectParams } from "./Effect";
+import Effect, { EffectParameters } from "./Effect";
 import { NoiseFunction3D, createNoise3D } from "simplex-noise";
 
-interface NoiseParams extends EffectParams {
+interface NoiseParameters extends EffectParameters {
     gradient: ColorStep[];
     speed: number;
     width: number;
@@ -25,7 +25,7 @@ export default class Noise extends Effect {
     gradient: Gradient | undefined;
     noiseFunction: NoiseFunction3D | undefined;
 
-    public initialize(parameters: NoiseParams): void {
+    public initialize(parameters: NoiseParameters): void {
         this.gradient = new Gradient();
         this.gradient.build(parameters.gradient);
         this.noiseFunction = createNoise3D();

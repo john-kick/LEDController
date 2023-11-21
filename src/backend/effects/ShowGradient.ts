@@ -1,8 +1,7 @@
 import Gradient, { ColorStep } from "../Gradient";
-import { RGB } from "../util";
-import Effect, { EffectParams } from "./Effect";
+import Effect, { EffectParameters } from "./Effect";
 
-interface ShowGradientParams extends EffectParams {
+interface ShowGradientParameters extends EffectParameters {
     gradient: ColorStep[];
 }
 
@@ -10,7 +9,7 @@ export default class ShowGradient extends Effect {
     usesGradient: boolean = true;
     gradient: Gradient | undefined;
 
-    public initialize(parameters: ShowGradientParams): void {this.createGradient(parameters.gradient);
+    public initialize(parameters: ShowGradientParameters): void {this.createGradient(parameters.gradient);
         for (let i = 0; i < this.strip.length; i++) {
             const color = this.gradient!.getColorAtPos(((i / 287) * (100 - 1)) + 1);
             this.strip.setPixelColor(i, color);

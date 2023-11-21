@@ -1,8 +1,8 @@
 import { RGB } from "../util";
 import AnimatedEffect from "./AnimatedEffect";
-import Effect, { EffectParams } from "./Effect";
+import { EffectParameters } from "./Effect";
 
-interface TheaterParams extends EffectParams {
+interface TheaterParameters extends EffectParameters {
     red: string;
     green: string;
     blue: string;
@@ -16,7 +16,7 @@ export default class Theater extends AnimatedEffect {
     size: number = 1;
     position: number = 0;
 
-    public initialize(parameters: TheaterParams): void {
+    public initialize(parameters: TheaterParameters): void {
         this.color = {
             r: Number(parameters.red),
             g: Number(parameters.green),
