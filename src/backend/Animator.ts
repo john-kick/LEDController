@@ -16,7 +16,7 @@ let animator: ((effect: AnimatedEffect) => void) | undefined;
 let id: number = 0;
 const socket: Socket = EffectController.getSocket();
 let effect: Effect;
-let fps: number = 0;
+let fps: number = 1;
 let frameTimeStamp: number = Math.floor(getRuntime() / 1000);
 
 parentPort.on("message", (message) => {
@@ -26,8 +26,8 @@ parentPort.on("message", (message) => {
 });
 
 async function update(effectName: string, effectParameters: EffectParameters, brightness: number): Promise<void> {
-    effect = EffectFactory.getEffect(effectName);
-    effect.strip.setBrightness(brightness);
+            effect = EffectFactory.getEffect(effectName);
+        effect.strip.setBrightness(brightness);
     effect.initialize(effectParameters);
     if (!effect.isAnimated) {
         send();
