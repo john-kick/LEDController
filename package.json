@@ -48,6 +48,7 @@
 		"tsc": "tsc",
 		"tsc-w": "tsc -w",
 		"start": "node .\\dist\\backend\\app.js",
+		"start-linux": "node ./dist/backend/app.js",
 		"build": "npm run tsc && npm run webpack && npm run start"
 	}
 }
