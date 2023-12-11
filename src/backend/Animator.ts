@@ -38,7 +38,6 @@ async function update(effectName: string, effectParameters: EffectParameters, br
             const functionId = id;
             while (true) {
                 if (frameTimeStamp < Math.floor(getRuntime() / 1000)) {
-                    console.log(Math.floor(getRuntime() / 1000), fps, `${functionId}/${id}`);
                     fps = 0;
                     frameTimeStamp = Math.floor(getRuntime() / 1000);
                 } else {
